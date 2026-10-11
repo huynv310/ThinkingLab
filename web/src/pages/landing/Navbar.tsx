@@ -3,7 +3,7 @@ import { Logo } from '../../components/Logo'
 
 const LINKS = [
   { href: '#van-de', label: 'Vấn đề' },
-  { href: '#hoat-dong', label: 'Hoạt động' },
+  { href: '#lo-trinh', label: 'Lộ trình' },
   { href: '#dang-ky', label: 'Tham gia' },
 ]
 

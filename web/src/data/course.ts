@@ -1,4 +1,4 @@
-// Toàn bộ nội dung lấy từ "Đề xuất dự án ThinkingLab" - Nhóm 3, SSA101.
+// Toàn bộ nội dung lấy từ "Đề xuất dự án ThinkingLab".
 
 export type SessionFormat = 'Trực tiếp' | 'Online' | 'Dự phòng'
 
@@ -224,31 +224,13 @@ export const COURSE_SESSIONS: CourseSession[] = [
 ]
 
 export const COURSE_FACTS = {
-  subject: 'SSA 101 – Academic Skills',
   period: '28/9 – 18/10/2026',
-  offline: '2 buổi trực tiếp tại phòng học Trường Đại học FPT',
-  online: '4 buổi Google Meet, 20h–21h tối cuối tuần, có ghi hình',
+  offline: '2 buổi trực tiếp tại Trường Đại học FPT',
+  online: '4 buổi online qua Google Meet, 20h–21h cuối tuần, có ghi hình',
 }
 
 export const SURVEY_STATS = [
-  { value: '60,6%', label: 'tự nhận kỹ năng tư duy phản biện chỉ ở mức trung bình (3/5)' },
-  { value: '66,7%', label: 'gặp khó khăn khi kiểm chứng độ tin cậy của thông tin — rào cản lớn nhất' },
-  { value: '57,6%', label: 'ngại phát biểu, sợ sai và dễ bị đối phương dẫn dắt' },
-  { value: '54,5%', label: 'khó diễn đạt ý kiến phản biện của mình' },
-  { value: '42,4%', label: 'chấp nhận ngay ý kiến từ người có thẩm quyền mà không kiểm chứng' },
-]
-
-export const GOALS = [
-  { value: '25–35%', label: 'mức tăng điểm Final-test so với Pre-test' },
-  { value: '≥ 85%', label: 'học viên nhận diện đúng ít nhất 4/5 lỗi ngụy biện' },
-  { value: '3.05 → 4.0', label: 'điểm tự tin khi tranh biện và làm việc nhóm (thang 5)' },
-  { value: '≥ 4.2', label: 'chỉ số hài lòng trung bình toàn khóa (thang 5)' },
-]
-
-export const TEAM = [
-  { name: 'Trương Văn Dũng', role: 'Nhóm trưởng' },
-  { name: 'Phạm Hùng Phú', role: 'Thành viên' },
-  { name: 'Nguyễn Khắc Việt Anh', role: 'Thành viên' },
-  { name: 'Đoàn Nam Khánh', role: 'Thành viên' },
-  { name: 'Nguyễn Văn Huy', role: 'Thành viên' },
+  { value: '60,6%', label: 'tự đánh giá kỹ năng tư duy phản biện chỉ ở mức trung bình (3/5)' },
+  { value: '66,7%', label: 'gặp khó khăn khi kiểm chứng độ tin cậy của thông tin' },
+  { value: '57,6%', label: 'ngại phát biểu vì sợ sai' },
 ]
