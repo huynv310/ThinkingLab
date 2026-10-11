@@ -1,7 +1,8 @@
 import { ChevronRight, MapPin, MonitorPlay, RotateCcw } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { COURSE_FACTS, COURSE_SESSIONS, type SessionFormat } from '../../data/course'
+import { COURSE_FACTS, type SessionFormat } from '../../data/course'
 import { displayName, useAuth } from '../../lib/auth'
+import { useSessions } from '../../lib/course'
 
 export const FORMAT_ICON: Record<SessionFormat, typeof MapPin> = {
   'Trực tiếp': MapPin,
@@ -11,6 +12,7 @@ export const FORMAT_ICON: Record<SessionFormat, typeof MapPin> = {
 
 export default function CoursesPage() {
   const { session } = useAuth()
+  const { sessions, error } = useSessions()
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-8 sm:py-12">
@@ -20,17 +22,21 @@ export default function CoursesPage() {
         {COURSE_FACTS.period} · {COURSE_FACTS.offline} · {COURSE_FACTS.online}.
       </p>
 
+      {error && <p role="alert" className="glass mt-8 rounded-3xl p-6 text-flame-deep">Không tải được danh sách buổi học: {error}</p>}
+      {!sessions && !error && <p className="mt-8 text-ink-soft" aria-live="polite">Đang tải buổi học…</p>}
+      {sessions?.length === 0 && <p className="glass mt-8 rounded-3xl p-6 text-ink-soft">Chưa có buổi học nào.</p>}
+
       <ol className="mt-8 grid gap-4 sm:grid-cols-2">
-        {COURSE_SESSIONS.map((s) => {
+        {sessions?.map((s) => {
           const Icon = FORMAT_ICON[s.format]
           return (
-            <li key={s.slug}>
+            <li key={s.id}>
               <Link
                 to={s.slug}
                 className="glass group flex h-full flex-col rounded-3xl p-6 transition-transform duration-200 hover:-translate-y-1"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold tracking-widest text-teal-deep uppercase">Buổi {s.no}</span>
+                  <span className="text-sm font-bold tracking-widest text-teal-deep uppercase">Buổi {s.position}</span>
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1 text-xs font-semibold">
                     <Icon size={14} aria-hidden /> {s.format} · {s.duration}
                   </span>

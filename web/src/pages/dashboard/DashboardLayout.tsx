@@ -1,13 +1,15 @@
-import { BookOpen, LogOut, MessageCircleHeart } from 'lucide-react'
+import { BookOpen, LogOut, MessageCircleHeart, ShieldCheck } from 'lucide-react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { Logo } from '../../components/Logo'
 import { displayName, useAuth } from '../../lib/auth'
+import { useIsAdmin } from '../../lib/course'
 import { supabase } from '../../lib/supabase'
 
 const NAV = [
   { to: 'khoa-hoc', label: 'Tài liệu khóa học', short: 'Khóa học', icon: BookOpen },
   { to: 'tro-chuyen', label: 'Bạn luyện phản biện', short: 'Trò chuyện', icon: MessageCircleHeart },
 ]
+const ADMIN_NAV = { to: 'quan-tri', label: 'Quản trị khóa học', short: 'Quản trị', icon: ShieldCheck }
 
 const navClass = ({ isActive }: { isActive: boolean }) =>
   `flex min-h-12 items-center gap-3 rounded-2xl px-4 font-semibold transition-colors ${
@@ -18,6 +20,8 @@ export default function DashboardLayout() {
   const { session } = useAuth()
   const navigate = useNavigate()
   const name = displayName(session)
+  const { isAdmin } = useIsAdmin()
+  const nav = isAdmin ? [...NAV, ADMIN_NAV] : NAV
 
   async function logout() {
     await supabase.auth.signOut()
@@ -30,7 +34,7 @@ export default function DashboardLayout() {
       <aside className="glass sticky top-0 hidden h-dvh w-72 shrink-0 flex-col gap-8 rounded-r-3xl p-5 lg:flex">
         <Logo to="/" />
         <nav aria-label="Dashboard" className="flex flex-col gap-1.5">
-          {NAV.map(({ to, label, icon: Icon }) => (
+          {nav.map(({ to, label, icon: Icon }) => (
             <NavLink key={to} to={to} className={navClass}>
               <Icon size={20} aria-hidden /> {label}
             </NavLink>
@@ -59,8 +63,8 @@ export default function DashboardLayout() {
         </main>
 
         {/* Bottom nav mobile */}
-        <nav aria-label="Dashboard" className="glass-strong fixed inset-x-3 bottom-3 z-30 grid grid-cols-2 gap-1 rounded-3xl p-1.5 lg:hidden">
-          {NAV.map(({ to, short, icon: Icon }) => (
+        <nav aria-label="Dashboard" className="glass-strong fixed inset-x-3 bottom-3 z-30 grid auto-cols-fr grid-flow-col gap-1 rounded-3xl p-1.5 lg:hidden">
+          {nav.map(({ to, short, icon: Icon }) => (
             <NavLink key={to} to={to} className={(s) => `${navClass(s)} justify-center`}>
               <Icon size={20} aria-hidden /> {short}
             </NavLink>

@@ -16,3 +16,4 @@ supabase
 test_*.py
 conftest.py
 archive_conversations.py
+grant_admin.py

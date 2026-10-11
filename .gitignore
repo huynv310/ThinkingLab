@@ -237,3 +237,6 @@ web/dist/
 # Supabase CLI (chứa project-ref, pooler URL)
 supabase/.temp/
 supabase/.branches/
+
+.vercel
+.env*

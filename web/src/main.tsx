@@ -11,6 +11,7 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-route
 import { AuthProvider, useAuth } from './lib/auth'
 
 // Tách chunk: landing (GSAP + Lenis) và dashboard không tải lẫn nhau
+const AdminPage = lazy(() => import('./pages/dashboard/AdminPage'))
 const AuthPage = lazy(() => import('./pages/AuthPage'))
 const ChatPage = lazy(() => import('./pages/dashboard/ChatPage'))
 const CourseDetail = lazy(() => import('./pages/dashboard/CourseDetail'))
@@ -52,6 +53,7 @@ createRoot(document.getElementById('root')!).render(
               <Route path="khoa-hoc/:slug" element={<CourseDetail />} />
               <Route path="tro-chuyen" element={<ChatPage />} />
               <Route path="tro-chuyen/:id" element={<ChatPage />} />
+              <Route path="quan-tri" element={<AdminPage />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
