@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
+
+  /* Bảng màu lấy từ logo ThinkingLab */
+  --color-ink: #0b1b3f;        /* chữ chính - navy */
+  --color-ink-soft: #3d4a6b;   /* chữ phụ, 7.9:1 trên nền sáng */
+  --color-brand: #2b4fd8;      /* xanh "Thinking" */
+  --color-brand-deep: #1f3bb0;
+  --color-teal: #0e9f9f;       /* bóng thoại trái (chỉ dùng trang trí / chữ lớn) */
+  --color-teal-deep: #0a7373;  /* teal đủ tương phản cho chữ nhỏ */
+  --color-amber: #f5b323;      /* bóng thoại phải */
+  --color-flame: #e8590c;      /* "Lab" - chỉ trang trí / chữ lớn */
+  --color-flame-deep: #c2410c; /* nền nút: chữ trắng 5.2:1 */
+  --color-paper: #f4f6fd;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-paper text-ink font-sans;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--color-amber) 45%, transparent);
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-brand);
+    outline-offset: 3px;
+    border-radius: 12px;
+  }
+}
+
+/* Kính mờ trên nền sáng: trắng 58-78%, blur 18-22px, viền sáng + bóng mềm */
+@utility glass {
+  background: rgb(255 255 255 / 0.58);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid rgb(255 255 255 / 0.75);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.9) inset, 0 20px 50px -20px rgb(31 59 176 / 0.25);
+}
+@utility glass-strong {
+  background: rgb(255 255 255 / 0.78);
+  backdrop-filter: blur(22px) saturate(170%);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  border: 1px solid rgb(255 255 255 / 0.85);
+  box-shadow: 0 24px 60px -24px rgb(11 27 63 / 0.3);
+}
+@utility btn {
+  @apply inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-full px-6 font-semibold
+    transition-[transform,box-shadow,background-color,filter] duration-200 ease-out active:scale-[0.97]
+    disabled:cursor-not-allowed disabled:opacity-60;
+}
+@utility btn-primary {
+  @apply btn bg-brand text-white shadow-[0_12px_30px_-10px_rgb(43_79_216/0.7)] hover:bg-brand-deep;
+}
+@utility btn-accent {
+  @apply btn bg-flame-deep text-white shadow-[0_12px_30px_-10px_rgb(232_89_12/0.6)] hover:brightness-95;
+}
+@utility btn-ghost {
+  @apply btn glass text-ink hover:bg-white/85;
+}
+@utility input {
+  @apply min-h-12 w-full rounded-2xl border border-white/80 bg-white/75 px-4 text-base text-ink
+    placeholder:text-ink-soft/70 transition-shadow focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/20;
+}
+@utility text-gradient {
+  background: linear-gradient(100deg, var(--color-brand) 0%, var(--color-teal-deep) 60%, var(--color-brand) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Nền "aurora" cố định để kính mờ có thứ để làm mờ */
+.aurora {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background: var(--color-paper);
+}
+.aurora::before,
+.aurora::after,
+.aurora > span {
+  content: "";
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(80px);
+  opacity: 0.55;
+}
+.aurora::before {
+  width: 46vw; height: 46vw; left: -10vw; top: -12vw;
+  background: radial-gradient(circle, #8ea2ff 0%, transparent 70%);
+}
+.aurora::after {
+  width: 40vw; height: 40vw; right: -8vw; top: 20vh;
+  background: radial-gradient(circle, #7fdcd6 0%, transparent 70%);
+}
+.aurora > span {
+  width: 38vw; height: 38vw; left: 30vw; bottom: -18vw;
+  background: radial-gradient(circle, #ffd27a 0%, transparent 70%);
+}
+
+/* Lenis */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Chat */
+@keyframes bubble-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+}
+.bubble-in { animation: bubble-in 0.28s var(--ease-out-expo) both; }
+@keyframes typing {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
+.typing-dot { animation: typing 1s ease-in-out infinite; }

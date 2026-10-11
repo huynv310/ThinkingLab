@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" font-family="'Be Vietnam Pro',system-ui,sans-serif">
+  <rect width="320" height="220" rx="24" fill="#EEF1FB"/>
+  <circle cx="80" cy="90" r="38" fill="#F5B323"/>
+  <rect x="64" y="128" width="32" height="12" rx="4" fill="#3D4A6B"/>
+  <rect x="68" y="142" width="24" height="8" rx="4" fill="#3D4A6B"/>
+  <text x="80" y="112" text-anchor="middle" font-size="40" font-weight="800" fill="#0B1B3F">?</text>
+  <text x="212" y="64" text-anchor="middle" font-size="15" font-weight="800" fill="#0B1B3F">Hết rồi hả?</text>
+  <g font-size="13" font-weight="700">
+    <rect x="148" y="80" width="128" height="28" rx="14" fill="#2B4FD8"/>
+    <text x="212" y="99" text-anchor="middle" fill="#fff">A · Luận điểm</text>
+    <rect x="148" y="114" width="128" height="28" rx="14" fill="#0A7373"/>
+    <text x="212" y="133" text-anchor="middle" fill="#fff">R · Lý lẽ</text>
+    <rect x="148" y="148" width="128" height="28" rx="14" fill="#C2410C"/>
+    <text x="212" y="167" text-anchor="middle" fill="#fff">E · Bằng chứng</text>
+  </g>
+  <text x="160" y="204" text-anchor="middle" font-size="12" fill="#3D4A6B">Thêm "vì sao" và "bằng chứng" nữa nha</text>
+</svg>

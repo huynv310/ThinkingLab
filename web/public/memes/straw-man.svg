@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" font-family="'Be Vietnam Pro',system-ui,sans-serif">
+  <rect width="320" height="220" rx="24" fill="#E6F7F5"/>
+  <line x1="84" y1="60" x2="84" y2="190" stroke="#8a5a2b" stroke-width="6"/>
+  <line x1="40" y1="100" x2="128" y2="100" stroke="#8a5a2b" stroke-width="6"/>
+  <circle cx="84" cy="66" r="22" fill="#F5B323"/>
+  <path d="M58 52 h52 l-8 -16 h-36z" fill="#C2410C"/>
+  <path d="M66 96 h36 l8 52 h-52z" fill="#2B4FD8"/>
+  <path d="M40 100 l-8 8 M40 100 l-10 0 M128 100 l8 8 M128 100 l10 0" stroke="#F5B323" stroke-width="3"/>
+  <circle cx="77" cy="64" r="2.5" fill="#0B1B3F"/><circle cx="91" cy="64" r="2.5" fill="#0B1B3F"/>
+  <rect x="150" y="48" width="150" height="74" rx="18" fill="#fff"/>
+  <path d="M160 110 l-14 14 l26 -8z" fill="#fff"/>
+  <text x="225" y="78" text-anchor="middle" font-size="14" font-weight="800" fill="#0B1B3F">Ủa, mình đâu</text>
+  <text x="225" y="100" text-anchor="middle" font-size="14" font-weight="800" fill="#0B1B3F">có nói vậy?</text>
+  <text x="225" y="160" text-anchor="middle" font-size="13" fill="#0A7373">Đánh bù nhìn rơm</text>
+  <text x="225" y="180" text-anchor="middle" font-size="13" fill="#0A7373">thì thắng dễ lắm</text>
+</svg>

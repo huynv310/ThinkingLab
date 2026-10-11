@@ -1,0 +1,18 @@
+# Bí mật: khóa thật được khai báo trong Vercel > Settings > Environment Variables
+.env
+.env.*
+!.env.example
+
+# Không cần khi chạy trên Vercel
+node_modules
+web/node_modules
+web/dist
+__pycache__
+.pytest_cache
+.claude
+brand
+thinkinglab-logo.png
+supabase
+test_*.py
+conftest.py
+archive_conversations.py
