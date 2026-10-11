@@ -295,6 +295,24 @@ def test_non_fallacy_memes_are_rationed(client, ai, monkeypatch):
     assert found == []  # không tốn lượt gọi GIPHY
 
 
+def test_non_fallacy_turn_usually_gets_meme(client, ai, monkeypatch):
+    monkeypatch.setattr(chat_api.memes, "find_meme", lambda q, exclude=(): "https://media1.giphy.com/x.gif")
+    monkeypatch.setattr(chat_api.random, "random", lambda: 0.5)  # quá nửa số lượt thường có meme
+    ai["reply"] = CompanionReply("Hay đó!", None, "mind blown")
+    conv_id = _start(client)
+    _, body = handle({"action": "reply", "conversation_id": conv_id, "content": "x y z"}, AUTH, client)
+    assert body["messages"][1]["meme_url"] == "https://media1.giphy.com/x.gif"
+
+
+def test_asking_for_meme_always_gets_one(client, ai, monkeypatch):
+    monkeypatch.setattr(chat_api.memes, "find_meme", lambda q, exclude=(): "https://media1.giphy.com/x.gif")
+    monkeypatch.setattr(chat_api.random, "random", lambda: 0.99)  # dù rơi vào nhánh không meme
+    ai["reply"] = CompanionReply("Có ngay!", None, "excited popcorn")
+    conv_id = _start(client)
+    _, body = handle({"action": "reply", "conversation_id": conv_id, "content": "Gửi MEME cho vui đi"}, AUTH, client)
+    assert body["messages"][1]["meme_url"] == "https://media1.giphy.com/x.gif"
+
+
 def test_fallacy_always_gets_meme(client, ai, monkeypatch):
     monkeypatch.setattr(chat_api.random, "random", lambda: 0.99)
     conv_id = _start(client)

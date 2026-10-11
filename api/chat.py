@@ -14,6 +14,7 @@ import json
 import logging
 import os
 import random
+import re
 import sys
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -43,7 +44,8 @@ INJECTION_REPLY = (
 )
 DAILY_EXHAUSTED = "Hôm nay bạn đã luyện hết lượt rồi 💪 Nghỉ ngơi chút, 0h mai quay lại luyện tiếp nhé!"
 MAX_BODY_BYTES = 16_384
-MEME_CHANCE = 0.3  # lượt không có ngụy biện: chỉ ~30% kèm meme (AI hay đề xuất quá nhiều)
+MEME_CHANCE = 0.6  # lượt không có ngụy biện: ~60% kèm meme; cộng luật "không 2 lượt liền" -> ~1 meme mỗi 2-3 lượt
+MEME_REQUEST = re.compile(r"(?<!\w)(meme|gif|ảnh chế|ảnh vui)", re.IGNORECASE)  # người dùng xin meme -> luôn gửi
 MEME_LOOKBACK = 12  # không dùng lại GIF đã gửi trong 12 tin gần nhất
 LOCAL_MEMES = {
     "HASTY_GENERALIZATION": "hasty",
@@ -225,16 +227,17 @@ def _compose_reply(client, conversation, content, wrap_up):
         reply = build_reply(content, turn=random.randrange(1_000), use_ai=False)
         meme_url = f"/memes/{reply.meme_key}.svg" if reply.meme_key else None
         return reply.text, reply.fallacy_code, meme_url, usage.get("total", 0)
-    return ai.text, ai.fallacy_code, _pick_meme(ai, recent), usage.get("total", 0)
+    return ai.text, ai.fallacy_code, _pick_meme(ai, recent, content), usage.get("total", 0)
 
 
-def _pick_meme(ai, recent):
-    """Meme hiếm và không lặp: không gửi 2 lượt liền, không dùng lại GIF đã gửi gần đây."""
+def _pick_meme(ai, recent, user_text=""):
+    """Meme vừa phải và không lặp: không gửi 2 lượt liền (trừ khi người dùng xin), không dùng lại GIF gần đây."""
     bot_memes = [m.get("meme_url") for m in recent if m.get("sender_type") == "BOT"]
-    if bot_memes and bot_memes[-1]:
-        return None
-    if ai.fallacy_code is None and random.random() >= MEME_CHANCE:
-        return None
+    if not MEME_REQUEST.search(user_text):
+        if bot_memes and bot_memes[-1]:
+            return None
+        if ai.fallacy_code is None and random.random() >= MEME_CHANCE:
+            return None
     used = {u for u in bot_memes if u}
     url = memes.find_meme(ai.meme_query, exclude=used) if ai.meme_query else None
     local = LOCAL_MEMES.get(ai.fallacy_code)
