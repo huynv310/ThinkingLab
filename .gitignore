@@ -240,3 +240,8 @@ supabase/.branches/
 
 .vercel
 .env*
+
+# Playwright
+web/e2e/.results/
+web/playwright-report/
+web/test-results/

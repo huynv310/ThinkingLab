@@ -1,6 +1,7 @@
 /// <reference types="vitest/config" />
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
+import { configDefaults } from 'vitest/config'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
@@ -10,5 +11,5 @@ export default defineConfig({
     // API Python chạy local bằng: python api/chat.py
     proxy: { '/api': 'http://127.0.0.1:8787' },
   },
-  test: { environment: 'jsdom' },
+  test: { environment: 'jsdom', exclude: [...configDefaults.exclude, 'e2e/**'] },
 })

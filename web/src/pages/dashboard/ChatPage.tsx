@@ -1,18 +1,24 @@
-import { AlertTriangle, Archive, ArrowLeft, Loader2, Plus, SendHorizonal, Sparkles, X } from 'lucide-react'
+import { AlertTriangle, Archive, ArrowLeft, Loader2, PenLine, Plus, SendHorizonal, Sparkles, X } from 'lucide-react'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import logo from '../../assets/logo.webp'
-import { FALLACY_LABELS, TOPICS, topicTitle } from '../../data/topics'
+import { QuotaRings } from '../../components/QuotaRings'
+import { CUSTOM_TOPIC_ID, FALLACY_LABELS, TOPICS, topicTitle } from '../../data/topics'
 import {
+  ChatApiError,
+  CUSTOM_TOPIC_MAX,
+  DAILY_TOKEN_LIMIT,
+  getDailyUsage,
   listConversations,
   listMessages,
   sendReply,
   startChat,
+  TOKEN_LIMIT,
   type ChatMessage,
   type Conversation,
 } from '../../lib/api'
 
-const MAX_CHARS = 2000
+const MAX_CHARS = 2000 // khớp MAX_CONTENT_CHARS ở api/chat.py
 const MIN_TYPING_MS = 700 // để "đang soạn tin" kịp hiện, cảm giác như bạn bè đang gõ
 
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms))
@@ -31,6 +37,7 @@ export default function ChatPage() {
   const [conversations, setConversations] = useState<Conversation[] | null>(null)
   const [pickerOpen, setPickerOpen] = useState(false)
   const [listError, setListError] = useState<string | null>(null)
+  const [dailyUsed, setDailyUsed] = useState(0)
 
   const refreshList = useCallback(() => {
     listConversations()
@@ -39,11 +46,15 @@ export default function ChatPage() {
   }, [])
 
   useEffect(refreshList, [refreshList])
+  useEffect(() => {
+    getDailyUsage().then(setDailyUsed).catch(() => {}) // chỉ để hiển thị; server mới là nơi chặn
+  }, [])
 
   const active = conversations?.find((c) => c.id === id) ?? null
 
-  async function onPickTopic(topic: string) {
-    const { conversation } = await startChat(topic)
+  async function onPickTopic(topic: string, customTopic?: string) {
+    const { conversation, usage } = await startChat(topic, customTopic)
+    setDailyUsed(usage.daily_used)
     setPickerOpen(false)
     refreshList()
     navigate(`/dashboard/tro-chuyen/${conversation.id}`)
@@ -79,7 +90,7 @@ export default function ChatPage() {
                 >
                   <Avatar archived={c.status === 'ARCHIVED'} />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate font-semibold">{topicTitle(c.topic)}</span>
+                    <span className="block truncate font-semibold">{topicTitle(c.topic, c.custom_topic)}</span>
                     <span className="block truncate text-sm text-ink-soft">
                       {c.status === 'ARCHIVED' ? 'Đã lưu trữ' : 'Bạn luyện phản biện'}
                     </span>
@@ -97,7 +108,15 @@ export default function ChatPage() {
       {/* Khung chat */}
       <section className={`glass min-w-0 flex-1 flex-col overflow-hidden rounded-3xl lg:flex ${id ? 'flex' : 'hidden'}`}>
         {id ? (
-          <Thread key={id} conversationId={id} conversation={active} onSent={refreshList} />
+          <Thread
+            key={id}
+            conversationId={id}
+            conversation={active}
+            dailyUsed={dailyUsed}
+            onUsage={setDailyUsed}
+            onSent={refreshList}
+            onNewChat={() => setPickerOpen(true)}
+          />
         ) : (
           <Welcome onStart={() => setPickerOpen(true)} />
         )}
@@ -144,13 +163,24 @@ type UiMessage = ChatMessage & { pending?: boolean }
 function Thread({
   conversationId,
   conversation,
+  dailyUsed,
+  onUsage,
   onSent,
+  onNewChat,
 }: {
   conversationId: string
   conversation: Conversation | null
+  dailyUsed: number
+  onUsage: (dailyUsed: number) => void
   onSent: () => void
+  onNewChat: () => void
 }) {
   const [messages, setMessages] = useState<UiMessage[] | null>(null)
+  // Số liệu mới nhất từ server; trước lượt gửi đầu tiên thì lấy từ danh sách hội thoại
+  const [usedTokens, setUsedTokens] = useState<number | null>(null)
+  const used = usedTokens ?? conversation?.token_count ?? 0
+  const dailyOut = dailyUsed >= DAILY_TOKEN_LIMIT
+  const exhausted = used >= TOKEN_LIMIT || dailyOut
   const [draft, setDraft] = useState('')
   const [typing, setTyping] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -189,10 +219,14 @@ function Thread({
     try {
       const [res] = await Promise.all([sendReply(conversationId, content), wait(MIN_TYPING_MS)])
       setMessages((m) => [...(m ?? []).filter((x) => x.id !== temp.id), ...res.messages])
+      setUsedTokens(res.usage.used)
+      onUsage(res.usage.daily_used)
       onSent()
     } catch (err) {
       setMessages((m) => (m ?? []).filter((x) => x.id !== temp.id))
       setDraft(content)
+      if (err instanceof ChatApiError && err.code === 'budget_exhausted') setUsedTokens(TOKEN_LIMIT)
+      if (err instanceof ChatApiError && err.code === 'daily_exhausted') onUsage(DAILY_TOKEN_LIMIT)
       setError(err instanceof Error ? err.message : 'Gửi tin nhắn thất bại.')
     } finally {
       setTyping(false)
@@ -214,10 +248,11 @@ function Thread({
           <ArrowLeft size={20} aria-hidden />
         </Link>
         <Avatar archived={conversation?.status === 'ARCHIVED'} />
-        <div className="min-w-0">
-          <h2 className="truncate font-bold">{topicTitle(conversation?.topic ?? null)}</h2>
+        <div className="min-w-0 flex-1">
+          <h2 className="truncate font-bold">{topicTitle(conversation?.topic ?? null, conversation?.custom_topic)}</h2>
           <p className="text-sm text-ink-soft">{typing ? 'Đang soạn tin…' : 'Bạn luyện phản biện · luôn online'}</p>
         </div>
+        <QuotaRings used={used} limit={TOKEN_LIMIT} dailyUsed={dailyUsed} dailyLimit={DAILY_TOKEN_LIMIT} />
       </header>
 
       <div ref={scrollRef} className="min-h-0 flex-1 space-y-3 overflow-y-auto px-3 py-5 sm:px-6" aria-live="polite">
@@ -243,6 +278,20 @@ function Thread({
         </p>
       )}
 
+      {exhausted ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/70 p-4 sm:px-6">
+          <p className="text-sm text-ink-soft">
+            {dailyOut
+              ? 'Hôm nay bạn đã luyện hết lượt rồi 💪 0h mai quay lại luyện tiếp nhé!'
+              : 'Cuộc trò chuyện này đã dùng hết lượt. Mở cuộc mới để luyện tiếp nhé!'}
+          </p>
+          {!dailyOut && (
+            <button onClick={onNewChat} className="btn-primary min-h-11 px-4 text-sm">
+              <Plus size={18} aria-hidden /> Trò chuyện mới
+            </button>
+          )}
+        </div>
+      ) : (
       <form onSubmit={send} className="flex items-end gap-2 border-t border-white/70 p-3 sm:px-5">
         <label htmlFor="chat-input" className="sr-only">Tin nhắn</label>
         <textarea
@@ -265,6 +314,7 @@ function Thread({
           <SendHorizonal size={20} aria-hidden />
         </button>
       </form>
+      )}
     </>
   )
 }
@@ -324,20 +374,28 @@ function TypingDots() {
   )
 }
 
-function TopicPicker({ onClose, onPick }: { onClose: () => void; onPick: (topic: string) => Promise<void> }) {
+function TopicPicker({
+  onClose,
+  onPick,
+}: {
+  onClose: () => void
+  onPick: (topic: string, customTopic?: string) => Promise<void>
+}) {
   const ref = useRef<HTMLDialogElement>(null)
   const [busy, setBusy] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [custom, setCustom] = useState('')
+  const customOk = custom.trim().length >= 5
 
   useEffect(() => {
     ref.current?.showModal()
   }, [])
 
-  async function pick(topic: string) {
+  async function pick(topic: string, customTopic?: string) {
     setBusy(topic)
     setError(null)
     try {
-      await onPick(topic)
+      await onPick(topic, customTopic)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Không tạo được cuộc trò chuyện.')
       setBusy(null)
@@ -379,7 +437,44 @@ function TopicPicker({ onClose, onPick }: { onClose: () => void; onPick: (topic:
             </li>
           ))}
         </ul>
-        {error && <p role="alert" className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            if (customOk) pick(CUSTOM_TOPIC_ID, custom.trim())
+          }}
+          className="mt-3 rounded-2xl border-2 border-dashed border-brand/30 bg-white/50 p-4"
+        >
+          <label htmlFor="custom-topic" className="flex items-center gap-2 font-bold">
+            <PenLine size={18} className="text-brand" aria-hidden /> Chủ đề của bạn
+          </label>
+          <p id="custom-topic-hint" className="mt-0.5 text-sm text-ink-soft">
+            Một vấn đề bạn muốn tranh luận. Lab sẽ duyệt nhanh trước khi bắt đầu.
+          </p>
+          <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+            <input
+              id="custom-topic"
+              className="input min-h-11 flex-1"
+              value={custom}
+              maxLength={CUSTOM_TOPIC_MAX}
+              onChange={(e) => setCustom(e.target.value)}
+              placeholder="VD: Có nên cấm điện thoại trong lớp học?"
+              aria-describedby="custom-topic-hint"
+              disabled={busy !== null}
+            />
+            <button
+              type="submit"
+              disabled={busy !== null || !customOk}
+              className="btn-primary min-h-11 px-5 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {busy === CUSTOM_TOPIC_ID ? <Loader2 className="animate-spin" size={18} aria-hidden /> : <Sparkles size={18} aria-hidden />}
+              {busy === CUSTOM_TOPIC_ID ? 'Đang duyệt…' : 'Bắt đầu'}
+            </button>
+          </div>
+          <p className="mt-1 text-right text-xs text-ink-soft">
+            {custom.length}/{CUSTOM_TOPIC_MAX}
+          </p>
+        </form>
+        {error &&<p role="alert" className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
       </div>
     </dialog>
   )

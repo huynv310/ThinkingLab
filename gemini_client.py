@@ -75,8 +75,12 @@ def generate_json(
     temperature=0.0,
     max_output_tokens=256,
     timeout=(3.05, 12),
+    usage=None,
 ):
-    """Trả về dict đã parse; ném lỗi nếu mạng/API hỏng hoặc output không phải JSON object."""
+    """Trả về dict đã parse; ném lỗi nếu mạng/API hỏng hoặc output không phải JSON object.
+
+    usage: dict tùy chọn, được ghi usage["total"] = tổng token Gemini tính phí cho lần gọi này.
+    """
     import requests  # import trễ: không có key thì không cần requests
 
     key = key or api_key()
@@ -109,13 +113,22 @@ def generate_json(
     response.raise_for_status()
 
     payload = response.json()
-    usage = payload.get("usageMetadata", {})
+    meta = payload.get("usageMetadata", {})
     logger.info(
         "Gemini %s tokens: in=%s out=%s thinking=%s",
-        model, usage.get("promptTokenCount"), usage.get("candidatesTokenCount"), usage.get("thoughtsTokenCount", 0),
+        model, meta.get("promptTokenCount"), meta.get("candidatesTokenCount"), meta.get("thoughtsTokenCount", 0),
     )
+    if usage is not None:
+        usage["total"] = usage.get("total", 0) + _total_tokens(meta)
     raw = payload["candidates"][0]["content"]["parts"][0]["text"]
     data = json.loads(raw)
     if not isinstance(data, dict):
         raise ValueError("Gemini output is not a JSON object")
     return data
+
+
+def _total_tokens(meta):
+    total = meta.get("totalTokenCount")
+    if isinstance(total, int):
+        return total
+    return sum(meta.get(k) or 0 for k in ("promptTokenCount", "candidatesTokenCount", "thoughtsTokenCount"))

@@ -129,3 +129,11 @@ html.lenis, html.lenis body { height: auto; }
   30% { transform: translateY(-4px); opacity: 1; }
 }
 .typing-dot { animation: typing 1s ease-in-out infinite; }
+
+/* Popover hạn mức: hiện ra nhẹ từ góc nút bấm */
+@keyframes quota-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.96);
+  }
+}

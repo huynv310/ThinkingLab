@@ -22,7 +22,9 @@ def clear_cache():
         _cache.clear()
 
 
-def find_meme(query):
+def find_meme(query, exclude=()):
+    """GIF ngẫu nhiên cho từ khóa, bỏ qua các URL trong `exclude` (meme đã gửi gần đây
+    trong cuộc trò chuyện). Hết GIF mới -> None (thà không gửi còn hơn lặp lại)."""
     key = os.environ.get(API_KEY_ENV, "").strip()
     if not key or not query:
         return None
@@ -38,7 +40,8 @@ def find_meme(query):
             return None
         with _lock:
             _cache[query] = (time.monotonic() + CACHE_SECONDS, urls)
-    return random.choice(urls) if urls else None
+    fresh = [u for u in urls if u not in exclude]
+    return random.choice(fresh) if fresh else None
 
 
 def _search(key, query):
@@ -47,7 +50,7 @@ def _search(key, query):
     try:
         response = requests.get(
             SEARCH_URL,
-            params={"api_key": key, "q": query, "limit": 15, "rating": "pg", "lang": "en"},
+            params={"api_key": key, "q": query, "limit": 25, "rating": "pg", "lang": "en"},
             timeout=(3.05, 5),
             allow_redirects=False,
         )
