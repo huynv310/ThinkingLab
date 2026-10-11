@@ -52,7 +52,7 @@
   box-shadow: 0 24px 60px -24px rgb(11 27 63 / 0.3);
 }
 @utility btn {
-  @apply inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-full px-6 font-semibold
+  @apply inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-full px-6 font-semibold whitespace-nowrap
     transition-[transform,box-shadow,background-color,filter] duration-200 ease-out active:scale-[0.97]
     disabled:cursor-not-allowed disabled:opacity-60;
 }

@@ -47,7 +47,7 @@ function Ring({ status, tone, icon }: { status: QuotaStatus; tone: Tone; icon: R
           className={`${ARC[tone][status.level]} motion-safe:transition-[stroke-dashoffset] motion-safe:duration-700 motion-safe:ease-out`}
         />
       </svg>
-      <span className="absolute inset-0 grid place-items-center text-[11px] leading-none font-extrabold tabular-nums text-ink">
+      <span className="absolute inset-0 grid place-items-center text-xs leading-none font-extrabold tabular-nums text-ink">
         {status.level === 'empty' ? icon : status.percentLeft}
       </span>
     </span>
@@ -174,7 +174,7 @@ export function QuotaRings({
                 setOpen(false)
                 buttonRef.current?.focus()
               }}
-              className="-mr-2 grid size-9 cursor-pointer place-items-center rounded-full hover:bg-white/80"
+              className="-mr-3 -my-1 grid size-11 cursor-pointer place-items-center rounded-full hover:bg-ink/5"
               aria-label="Đóng chi tiết hạn mức"
             >
               <X size={16} aria-hidden />

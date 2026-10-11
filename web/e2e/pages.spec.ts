@@ -32,7 +32,7 @@ test('landing: slogan đủ 3 vế, đã bỏ phần thừa, footer mới', asyn
   await expect(middle).toBeVisible()
   expect(await middle.evaluate((el) => getComputedStyle(el).color)).not.toBe('rgba(0, 0, 0, 0)')
 
-  for (const removed of ['Mục tiêu đo lường được', 'Một không gian để cùng vượt qua thiên vị tư duy', 'Nhóm 3', 'Trương Văn Dũng', 'Hồi 2', 'Hồi 4'])
+  for (const removed of ['Mục tiêu đo lường được', 'Một không gian để cùng vượt qua thiên vị tư duy', 'Nhóm 3', 'Trương Văn Dũng', 'Hồi 2', 'Hồi 4', '28/9'])
     await expect(page.getByText(removed)).toHaveCount(0)
 
   await expect(page.getByRole('heading', { name: /6 buổi, luyện bằng/ })).toBeVisible()

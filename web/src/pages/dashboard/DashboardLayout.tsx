@@ -63,7 +63,7 @@ export default function DashboardLayout() {
         </main>
 
         {/* Bottom nav mobile */}
-        <nav aria-label="Dashboard" className="glass-strong fixed inset-x-3 bottom-3 z-30 grid auto-cols-fr grid-flow-col gap-1 rounded-3xl p-1.5 lg:hidden">
+        <nav aria-label="Dashboard" className="glass-strong fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-30 bg-white/95! grid auto-cols-fr grid-flow-col gap-1 rounded-3xl p-1.5 lg:hidden">
           {nav.map(({ to, short, icon: Icon }) => (
             <NavLink key={to} to={to} className={(s) => `${navClass(s)} justify-center`}>
               <Icon size={20} aria-hidden /> {short}

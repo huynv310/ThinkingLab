@@ -28,7 +28,7 @@ export function Navbar() {
             </li>
           ))}
         </ul>
-        <div className="[&_.btn-ghost]:hidden sm:[&_.btn-ghost]:inline-flex">
+        <div className="shrink-0 max-sm:[&_.btn-accent]:px-4 max-sm:[&_.btn-accent_svg]:hidden [&_.btn-ghost]:hidden sm:[&_.btn-ghost]:inline-flex">
           <AuthButtons />
         </div>
       </nav>

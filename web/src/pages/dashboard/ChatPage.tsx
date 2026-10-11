@@ -250,7 +250,7 @@ function Thread({
         <Avatar archived={conversation?.status === 'ARCHIVED'} />
         <div className="min-w-0 flex-1">
           <h2 className="truncate font-bold">{topicTitle(conversation?.topic ?? null, conversation?.custom_topic)}</h2>
-          <p className="text-sm text-ink-soft">{typing ? 'Đang soạn tin…' : 'Bạn luyện phản biện · luôn online'}</p>
+          <p className="truncate text-sm text-ink-soft">{typing ? 'Đang soạn tin…' : <><span className="max-sm:hidden">Bạn luyện phản biện · </span>Luôn online</>}</p>
         </div>
         <QuotaRings used={used} limit={TOKEN_LIMIT} dailyUsed={dailyUsed} dailyLimit={DAILY_TOKEN_LIMIT} />
       </header>

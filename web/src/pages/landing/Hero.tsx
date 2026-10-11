@@ -6,7 +6,6 @@ import { ChevronsDown } from 'lucide-react'
 import { useRef } from 'react'
 import logo from '../../assets/logo.webp'
 import { AuthButtons } from '../../components/AuthButtons'
-import { COURSE_FACTS } from '../../data/course'
 
 gsap.registerPlugin(ScrollTrigger, SplitText)
 
@@ -17,7 +16,7 @@ const SLOGAN = [
   { text: 'Vững vàng lập luận', className: 'text-flame-deep' },
 ]
 
-const FACTS = [COURSE_FACTS.period, '6 buổi × 60 phút', '2 buổi trực tiếp · 4 buổi online']
+const FACTS = ['6 buổi × 60 phút', '2 buổi trực tiếp · 4 buổi online']
 
 export function Hero() {
   const root = useRef<HTMLElement>(null)
@@ -67,10 +66,10 @@ export function Hero() {
           <div className="hero-fade mt-8">
             <AuthButtons size="lg" />
           </div>
-          <ul className="hero-fade mt-8 flex flex-wrap gap-x-3 gap-y-1 text-sm font-medium text-ink-soft" aria-label="Thông tin khóa học">
+          <ul className="hero-fade mt-8 flex flex-col gap-x-3 sm:flex-row sm:flex-wrap gap-y-1 text-sm font-medium text-ink-soft" aria-label="Thông tin khóa học">
             {FACTS.map((text, i) => (
               <li key={text} className="flex items-center gap-3">
-                {i > 0 && <span className="size-1 rounded-full bg-ink/30" aria-hidden />}
+                {i > 0 && <span className="hidden size-1 rounded-full bg-ink/30 sm:block" aria-hidden />}
                 {text}
               </li>
             ))}

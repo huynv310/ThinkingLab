@@ -40,7 +40,7 @@ export default function CourseDetail() {
       <h1 className="mt-2 text-3xl leading-tight font-extrabold sm:text-4xl">{s.title}</h1>
 
       {/* Video: chỉ nhúng YouTube */}
-      <div className="glass mt-8 aspect-video overflow-hidden rounded-3xl">
+      <div className={`glass mt-8 overflow-hidden rounded-3xl ${s.youtube_id ? 'aspect-video' : 'sm:aspect-video'}`}>
         {s.youtube_id ? (
           <iframe
             src={youtubeEmbedUrl(s.youtube_id)}

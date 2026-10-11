@@ -37,15 +37,15 @@ export function FinalCta() {
         <h2 id="cta-title" className="mx-auto mt-6 max-w-3xl text-4xl leading-tight font-extrabold sm:text-5xl">
           Sẵn sàng rèn góc nhìn sắc bén và <span className="text-flame-deep">dám lên tiếng</span>?
         </h2>
-        <div className="mt-8 flex justify-center">
+        <div className="mt-8 flex justify-center [&>div]:justify-center">
           <AuthButtons size="lg" />
         </div>
-        <ul className="mt-8 flex flex-col items-center gap-2 text-sm text-ink-soft sm:flex-row sm:justify-center sm:gap-6">
-          <li className="inline-flex items-center gap-2">
-            <MapPin size={16} className="text-brand" aria-hidden /> {COURSE_FACTS.offline}
+        <ul className="mx-auto mt-8 flex w-fit flex-col items-start gap-2 text-left text-sm text-ink-soft sm:flex-row sm:justify-center sm:gap-6">
+          <li className="flex gap-2">
+            <MapPin size={16} className="mt-0.5 shrink-0 text-brand" aria-hidden /> {COURSE_FACTS.offline}
           </li>
-          <li className="inline-flex items-center gap-2">
-            <MonitorPlay size={16} className="text-brand" aria-hidden /> {COURSE_FACTS.online}
+          <li className="flex gap-2">
+            <MonitorPlay size={16} className="mt-0.5 shrink-0 text-brand" aria-hidden /> {COURSE_FACTS.online}
           </li>
         </ul>
       </div>
