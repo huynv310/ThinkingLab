@@ -71,7 +71,7 @@ export function Activities() {
   )
 
   return (
-    <section id="hoat-dong" ref={root} aria-labelledby="act-title" className="px-4 py-24 sm:py-32">
+    <section data-tour-stop id="hoat-dong" ref={root} aria-labelledby="act-title" className="px-4 py-24 sm:py-32">
       <div className="mx-auto max-w-6xl">
         <div className="reveal max-w-2xl">
           <p className="font-semibold text-teal-deep">Hồi 3 · Thực hành</p>

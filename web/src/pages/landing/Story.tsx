@@ -4,10 +4,29 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ArrowRight, MapPin, MonitorPlay } from 'lucide-react'
 import { useRef } from 'react'
 import { COURSE_SESSIONS, SURVEY_STATS } from '../../data/course'
+import { paginate, type TourStops } from '../../lib/idleAutoScroll'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const MAIN_SESSIONS = COURSE_SESSIONS.filter((s) => s.format !== 'Dự phòng')
+const PIN_ID = 'story-pin'
+
+/**
+ * Điểm dừng cho chế độ trình chiếu trong đoạn pin (desktop): mỗi bước lật sang
+ * "trang thẻ" kế, thẻ đầu trang nằm sát lề trái. Cuộn dọc khớp 1:1 với dịch ngang.
+ */
+export function storyTourStops(): TourStops {
+  const st = ScrollTrigger.getById(PIN_ID)
+  const track = document.querySelector<HTMLElement>('[data-story-track]')
+  if (!st || !track) return { stops: [] }
+  const distance = st.end - st.start
+  const pad = parseFloat(getComputedStyle(track).paddingLeft) || 0
+  const offsets = [...track.children]
+    .filter((c): c is HTMLElement => c instanceof HTMLElement && c.offsetWidth > 8)
+    .map((c) => Math.min(Math.max(c.offsetLeft - track.offsetLeft - pad, 0), distance))
+  const pages = paginate([0, ...offsets, distance], window.innerWidth * 0.7)
+  return { stops: pages.map((x) => st.start + x), pinned: [[st.start, st.end]] }
+}
 
 /** Hồi 2: Vấn đề & câu chuyện - pin màn hình, thẻ kính trôi ngang (desktop); vuốt ngang (mobile). */
 export function Story() {
@@ -24,6 +43,7 @@ export function Story() {
           x: () => -distance(),
           ease: 'none', // bắt buộc để vị trí ngang khớp 1:1 với cuộn dọc
           scrollTrigger: {
+            id: PIN_ID,
             trigger: root.current,
             pin: true,
             scrub: 1,
@@ -60,11 +80,13 @@ export function Story() {
     <section
       id="van-de"
       ref={root}
+      data-tour-stop
       aria-labelledby="story-title"
       className="relative flex min-h-dvh flex-col justify-center overflow-hidden py-24 lg:py-0"
     >
       <div
         ref={track}
+        data-story-track
         className="flex w-max items-stretch gap-5 px-4 sm:px-8 lg:gap-8 lg:px-[8vw] max-lg:w-full max-lg:snap-x max-lg:snap-mandatory max-lg:overflow-x-auto max-lg:pb-6"
       >
         {/* Mở đầu */}

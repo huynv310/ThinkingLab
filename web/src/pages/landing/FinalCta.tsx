@@ -31,7 +31,7 @@ export function FinalCta() {
   )
 
   return (
-    <section id="dang-ky" ref={root} aria-labelledby="cta-title" className="px-4 pt-12 pb-10">
+    <section data-tour-stop id="dang-ky" ref={root} aria-labelledby="cta-title" className="px-4 pt-12 pb-10">
       <div className="cta-panel glass-strong relative mx-auto max-w-5xl overflow-hidden rounded-[2.5rem] px-6 py-14 text-center sm:px-12 sm:py-20">
         <img src={logo} alt="" width={96} height={96} className="mx-auto" />
         <p className="mt-6 font-semibold text-teal-deep">Hồi 4 · Bắt đầu</p>

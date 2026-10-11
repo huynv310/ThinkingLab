@@ -1,16 +1,25 @@
 import { Hand } from 'lucide-react'
 import { useEffect } from 'react'
+import type { TourStops } from '../../lib/idleAutoScroll'
 import { useIdleAutoScroll } from '../../lib/useIdleAutoScroll'
 import { useLenis } from '../../lib/useLenis'
 import { Activities } from './Activities'
 import { FinalCta } from './FinalCta'
 import { Hero } from './Hero'
 import { Navbar } from './Navbar'
-import { Story } from './Story'
+import { Story, storyTourStops } from './Story'
+
+/** Slide của chế độ trình chiếu: đầu mỗi section + các trang thẻ trong đoạn cuộn ngang. */
+function getTourStops(): TourStops {
+  const y = window.scrollY
+  const sections = [...document.querySelectorAll<HTMLElement>('[data-tour-stop]')].map((el) => el.getBoundingClientRect().top + y)
+  const story = storyTourStops()
+  return { stops: [...sections, ...story.stops], pinned: story.pinned }
+}
 
 export default function Landing() {
   const lenis = useLenis()
-  const autoScrolling = useIdleAutoScroll(lenis)
+  const autoScrolling = useIdleAutoScroll(lenis, getTourStops)
 
   // Link neo (#van-de...) cuộn mượt qua Lenis
   useEffect(() => {
@@ -47,7 +56,7 @@ export default function Landing() {
       >
         {autoScrolling && (
           <>
-            <Hand size={18} className="text-flame-deep" aria-hidden /> Đang tự động cuộn — chạm để dừng
+            <Hand size={18} className="text-flame-deep" aria-hidden /> Đang trình chiếu — chạm để dừng
           </>
         )}
       </div>

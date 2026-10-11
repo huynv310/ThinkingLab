@@ -1,11 +1,14 @@
 import type Lenis from 'lenis'
 import { useEffect, useState } from 'react'
-import { IdleAutoScroller } from './idleAutoScroll'
+import { IdleAutoScroller, planBeats, type TourStops } from './idleAutoScroll'
 
 const ACTIVITY_EVENTS = ['mousemove', 'wheel', 'touchstart', 'pointerdown', 'keydown'] as const
 
-/** Gắn IdleAutoScroller vào trang: 4s không tương tác -> tự cuộn chậm qua Lenis. */
-export function useIdleAutoScroll(lenis: Lenis | null, { idleMs = 4000, pxPerSecond = 60 } = {}) {
+/**
+ * Gắn chế độ trình chiếu vào trang: 4s không tương tác -> tự lướt qua từng slide.
+ * `getStops` đọc vị trí các điểm dừng từ DOM tại thời điểm bắt đầu (layout có thể đã đổi).
+ */
+export function useIdleAutoScroll(lenis: Lenis | null, getStops: () => TourStops, { idleMs = 4000, dwellMs = 3000 } = {}) {
   const [active, setActive] = useState(false)
 
   useEffect(() => {
@@ -14,9 +17,10 @@ export function useIdleAutoScroll(lenis: Lenis | null, { idleMs = 4000, pxPerSec
 
     const scroller = new IdleAutoScroller({
       idleMs,
-      pxPerSecond,
+      dwellMs,
       getScroll: () => lenis.scroll,
-      getMaxScroll: () => lenis.limit,
+      // Mỗi bước tối đa 1 màn hình: các lần dừng nối tiếp nhau, không bỏ sót đoạn nào
+      getBeats: (from) => planBeats(from, lenis.limit, window.innerHeight + 1, getStops()),
       scrollTo: (y) => lenis.scrollTo(y, { immediate: true, force: true }),
       onActiveChange: setActive,
     })
@@ -39,7 +43,7 @@ export function useIdleAutoScroll(lenis: Lenis | null, { idleMs = 4000, pxPerSec
       scroller.stop()
       ACTIVITY_EVENTS.forEach((e) => window.removeEventListener(e, onActivity))
     }
-  }, [lenis, idleMs, pxPerSecond])
+  }, [lenis, getStops, idleMs, dwellMs])
 
   return active
 }

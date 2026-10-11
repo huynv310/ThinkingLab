@@ -53,7 +53,7 @@ export function Hero() {
   )
 
   return (
-    <section ref={root} className="relative grid min-h-dvh place-items-center px-4 pt-24 pb-16" aria-labelledby="hero-title">
+    <section data-tour-stop ref={root} className="relative grid min-h-dvh place-items-center px-4 pt-24 pb-16" aria-labelledby="hero-title">
       <div className="hero-content mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[1.25fr_1fr]">
         <div>
           <p className="hero-eyebrow glass inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-teal-deep">
