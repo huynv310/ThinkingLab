@@ -18,7 +18,9 @@ export default function DashboardLayout() {
   const name = displayName(session)
   const { isAdmin } = useIsAdmin()
   const nav = isAdmin ? [...NAV, ADMIN_NAV] : NAV
-  const [collapsed, setCollapsed] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
+  const [isPinned, setIsPinned] = useState(false)
+  const isExpanded = isPinned || isHovered
 
   async function logout() {
     await supabase.auth.signOut()
@@ -30,30 +32,32 @@ export default function DashboardLayout() {
       isActive
         ? 'border border-cyan-400/50 bg-cyan-500/20 text-cyan-300 shadow-[0_0_20px_rgba(34,211,238,0.25)]'
         : 'text-slate-400 hover:bg-white/5 hover:text-white'
-    } ${collapsed ? 'justify-center px-0' : ''}`
+    } ${!isExpanded ? 'justify-center px-0' : ''}`
 
   return (
     <div className="story-dark min-h-dvh text-slate-100 flex flex-col lg:flex-row relative">
-      {/* Sidebar desktop có nút thu gọn/mở rộng */}
+      {/* Sidebar desktop auto-collapse: thu gọn mặc định, di chuột vào tự bung mở */}
       <aside
-        className={`sticky top-0 hidden h-dvh shrink-0 flex-col gap-6 p-4 transition-all duration-300 lg:flex story-glass-strong border-r border-white/10 ${
-          collapsed ? 'w-20' : 'w-72'
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={`sticky top-0 hidden h-dvh shrink-0 flex-col gap-6 p-4 transition-all duration-300 ease-out lg:flex story-glass-strong border-r border-white/10 z-40 ${
+          isExpanded ? 'w-72 shadow-[0_0_50px_rgba(0,0,0,0.6)]' : 'w-20'
         }`}
       >
-        <div className={`flex items-center ${collapsed ? 'flex-col gap-3 justify-center' : 'justify-between'}`}>
-          {!collapsed ? (
+        <div className={`flex items-center ${isExpanded ? 'justify-between' : 'flex-col gap-3 justify-center'}`}>
+          {isExpanded ? (
             <Logo to="/" />
           ) : (
             <Logo to="/" size={36} withText={false} />
           )}
           <button
             type="button"
-            onClick={() => setCollapsed((c) => !c)}
+            onClick={() => setIsPinned((p) => !p)}
             className="grid size-11 place-items-center rounded-xl text-slate-400 transition-colors hover:bg-white/10 hover:text-white cursor-pointer shrink-0"
-            aria-label={collapsed ? 'Mở rộng menu' : 'Thu gọn menu'}
-            title={collapsed ? 'Mở rộng menu' : 'Thu gọn menu'}
+            aria-label={isPinned ? 'Bỏ ghim menu' : 'Ghim menu (luôn mở)'}
+            title={isPinned ? 'Bỏ ghim menu (tự động thu nhỏ khi rê chuột ra)' : 'Ghim menu (luôn mở rộng)'}
           >
-            {collapsed ? <ChevronRight size={18} aria-hidden /> : <ChevronLeft size={18} aria-hidden />}
+            {isPinned ? <ChevronLeft size={18} aria-hidden /> : <ChevronRight size={18} aria-hidden />}
           </button>
         </div>
 
@@ -63,16 +67,16 @@ export default function DashboardLayout() {
               key={to}
               to={to}
               className={navClass}
-              title={collapsed ? label : undefined}
+              title={!isExpanded ? label : undefined}
             >
               <Icon size={20} className="shrink-0" aria-hidden />
-              {!collapsed && <span className="truncate">{label}</span>}
+              {isExpanded && <span className="truncate">{label}</span>}
             </NavLink>
           ))}
         </nav>
 
         <div className="mt-auto rounded-2xl story-glass border border-white/10 p-3.5">
-          {!collapsed ? (
+          {isExpanded ? (
             <>
               <p className="text-xs font-medium text-slate-400">Xin chào,</p>
               <p className="truncate font-bold text-white">{name}</p>
