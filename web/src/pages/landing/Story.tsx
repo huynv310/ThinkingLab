@@ -92,11 +92,11 @@ export function Story() {
         className="flex flex-col gap-6 px-4 sm:px-8 lg:w-max lg:flex-row lg:items-stretch lg:gap-8 lg:px-[8vw]"
       >
         {/* Mở đầu */}
-        <div className="flex shrink-0 flex-col justify-center lg:w-[38vw]">
-          <h2 id="story-title" className="font-display text-4xl leading-tight font-extrabold sm:text-5xl text-white">
-            Sinh viên năm nhất đang <span className="text-rose-400 text-glow-rose">kẹt</span> ở đâu?
+        <div className="flex shrink-0 flex-col justify-center lg:w-[42vw] xl:w-[38vw] lg:max-w-xl">
+          <h2 id="story-title" className="font-display text-4xl leading-tight font-extrabold sm:text-5xl text-white text-balance">
+            Sinh viên năm nhất đang <span className="text-rose-400 text-glow-rose">kẹt</span> <span className="whitespace-nowrap">ở đâu?</span>
           </h2>
-          <p className="mt-4 text-lg text-slate-300">
+          <p className="mt-4 text-lg text-slate-300 text-pretty">
             Khảo sát 33 sinh viên FPT chỉ ra rằng rào cản lớn nhất không nằm ở kỹ năng code hay học bài, mà ở bẫy tâm lý bầy đàn và nỗi sợ khi lên tiếng.
           </p>
           <p className="mt-6 hidden items-center gap-2 font-semibold text-cyan-400 lg:flex">

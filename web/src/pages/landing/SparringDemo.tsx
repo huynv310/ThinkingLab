@@ -82,10 +82,10 @@ export function SparringDemo() {
     >
       <div className="mx-auto max-w-5xl">
         <div className="text-center">
-          <h2 id="sparring-demo-title" className="font-display text-3xl font-extrabold tracking-tight sm:text-5xl text-white">
-            Đấu trường phản biện: <span className="text-cyan-400 text-glow-cyan">Bạn sẽ đáp lại thế nào?</span>
+          <h2 id="sparring-demo-title" className="font-display text-3xl font-extrabold tracking-tight sm:text-5xl text-white text-balance">
+            Đấu trường phản biện: <span className="text-cyan-400 text-glow-cyan">Bạn sẽ đáp lại <span className="whitespace-nowrap">thế nào?</span></span>
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-300">
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-300 text-pretty">
             Chọn một trong ba phương án dưới đây
           </p>
         </div>

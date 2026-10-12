@@ -80,10 +80,10 @@ export function Activities() {
     <section data-tour-stop id="lo-trinh" ref={root} aria-labelledby="roadmap-title" className="relative px-4 py-24 sm:py-32">
       <div className="mx-auto max-w-6xl">
         <div className="reveal max-w-3xl">
-          <h2 id="roadmap-title" className="font-display text-4xl leading-tight font-extrabold sm:text-5xl text-white">
+          <h2 id="roadmap-title" className="font-display text-4xl leading-tight font-extrabold sm:text-5xl text-white text-balance">
             6 buổi, luyện bằng <span className="text-cyan-400 text-glow-cyan">tình huống thật</span>
           </h2>
-          <p className="mt-4 text-lg text-slate-300">
+          <p className="mt-4 text-lg text-slate-300 text-pretty">
             Toàn bộ chương trình được đóng gói thành các học phần thực chiến, không lý thuyết suông.
           </p>
         </div>

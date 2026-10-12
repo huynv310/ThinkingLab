@@ -48,7 +48,7 @@ export default function CoursesPage() {
                       <Icon size={14} className="text-cyan-400" aria-hidden /> {s.format} · {s.duration}
                     </span>
                   </div>
-                  <h2 className="mt-4 text-xl leading-snug font-bold text-white group-hover:text-cyan-300 transition-colors">
+                  <h2 className="mt-4 text-xl leading-snug font-bold text-white group-hover:text-cyan-300 transition-colors text-balance">
                     {s.title}
                   </h2>
                 </div>

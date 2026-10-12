@@ -41,10 +41,10 @@ export function FinalCta() {
           <img src={logo} alt="" width={80} height={80} className="relative mx-auto size-20 object-contain drop-shadow-[0_0_20px_rgba(34,211,238,0.5)]" />
         </div>
 
-        <h2 id="cta-title" className="font-display mx-auto mt-6 max-w-3xl text-3xl leading-tight font-extrabold sm:text-5xl text-white">
-          Sẵn sàng nâng cấp góc nhìn sắc bén và <span className="text-rose-400 text-glow-rose">dám lên tiếng</span>?
+        <h2 id="cta-title" className="font-display mx-auto mt-6 max-w-3xl text-3xl leading-tight font-extrabold sm:text-5xl text-white text-balance">
+          Sẵn sàng nâng cấp góc nhìn <span className="whitespace-nowrap">sắc bén</span> và <span className="text-rose-400 text-glow-rose">dám lên tiếng</span>?
         </h2>
-        <p className="mx-auto mt-4 max-w-xl text-base text-slate-300 sm:text-lg">
+        <p className="mx-auto mt-4 max-w-xl text-base text-slate-300 sm:text-lg text-pretty">
           Trải nghiệm môi trường rèn luyện phản biện văn minh, khách quan và giàu tính ứng dụng thực tiễn.
         </p>
 
