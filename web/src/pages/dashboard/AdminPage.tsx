@@ -41,28 +41,28 @@ function AdminPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-8 sm:py-12">
-      <h1 className="text-3xl font-extrabold sm:text-4xl">Quản trị khóa học</h1>
-      <p className="mt-2 text-ink-soft">Sửa nội dung buổi học, gắn video YouTube và tải lên tài liệu PDF / PPTX.</p>
-      {error && <p role="alert" className="mt-4 text-flame-deep">{error}</p>}
+      <h1 className="text-3xl font-extrabold sm:text-4xl text-white">Quản trị khóa học</h1>
+      <p className="mt-2 text-slate-400">Sửa nội dung buổi học, gắn video YouTube và tải lên tài liệu PDF / PPTX.</p>
+      {error && <p role="alert" className="mt-4 text-rose-400">{error}</p>}
 
       <div className="mt-8 grid gap-6 lg:grid-cols-[18rem_1fr]">
-        <nav aria-label="Danh sách buổi học" className="glass h-fit rounded-3xl p-3">
-          <button onClick={() => select('moi')} className="btn-primary mb-2 w-full">
+        <nav aria-label="Danh sách buổi học" className="story-glass-strong border border-white/10 h-fit rounded-3xl p-3">
+          <button onClick={() => select('moi')} className="btn-primary mb-2 w-full bg-gradient-to-r from-cyan-500 to-brand">
             <Plus size={18} aria-hidden /> Thêm buổi học
           </button>
-          {!sessions && <p className="p-3 text-ink-soft">Đang tải…</p>}
+          {!sessions && <p className="p-3 text-slate-400">Đang tải…</p>}
           <ul className="space-y-1">
             {sessions?.map((s) => (
               <li key={s.id}>
                 <button
                   onClick={() => select(s.id)}
                   aria-current={String(s.id) === selected}
-                  className={`w-full rounded-2xl px-3 py-2 text-left ${
-                    String(s.id) === selected ? 'bg-brand text-white' : 'hover:bg-white/70'
+                  className={`w-full rounded-2xl px-3 py-2 text-left transition-all ${
+                    String(s.id) === selected ? 'border border-cyan-400/50 bg-cyan-500/20 text-white shadow-[0_0_15px_rgba(34,211,238,0.2)]' : 'hover:bg-white/5 text-slate-300'
                   }`}
                 >
-                  <span className="block text-xs font-bold tracking-widest uppercase opacity-80">Buổi {s.position}</span>
-                  <span className="line-clamp-2 font-semibold">{s.title}</span>
+                  <span className="block text-xs font-bold tracking-widest uppercase text-cyan-400">Buổi {s.position}</span>
+                  <span className="line-clamp-2 font-semibold text-white">{s.title}</span>
                 </button>
               </li>
             ))}
@@ -85,7 +85,7 @@ function AdminPage() {
               }}
             />
           ) : (
-            <p className="glass rounded-3xl p-8 text-ink-soft">Chọn một buổi học bên trái để chỉnh sửa, hoặc thêm buổi mới.</p>
+            <p className="story-glass border border-white/10 rounded-3xl p-8 text-slate-400">Chọn một buổi học bên trái để chỉnh sửa, hoặc thêm buổi mới.</p>
           )}
         </div>
       </div>
@@ -176,7 +176,7 @@ function SessionEditor({
 
   return (
     <div className="space-y-6">
-      <form onSubmit={submit} className="glass space-y-5 rounded-3xl p-6 sm:p-8">
+      <form onSubmit={submit} className="story-glass-strong border border-white/10 space-y-5 rounded-3xl p-6 sm:p-8 text-white">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-xl font-bold">{session ? `Sửa buổi ${session.position}` : 'Buổi học mới'}</h2>
           {session && (
@@ -285,7 +285,7 @@ function SessionEditor({
       {session ? (
         <MaterialsManager sessionId={session.id} />
       ) : (
-        <p className="glass rounded-3xl p-6 text-ink-soft">Lưu buổi học trước, sau đó bạn có thể tải tài liệu lên.</p>
+        <p className="story-glass border border-white/10 rounded-3xl p-6 text-slate-400">Lưu buổi học trước, sau đó bạn có thể tải tài liệu lên.</p>
       )}
     </div>
   )
@@ -347,10 +347,10 @@ function MaterialsManager({ sessionId }: { sessionId: number }) {
   }
 
   return (
-    <section className="glass space-y-4 rounded-3xl p-6 sm:p-8" aria-labelledby="admin-materials">
-      <h2 id="admin-materials" className="text-xl font-bold">Tài liệu (PDF / PPTX)</h2>
+    <section className="story-glass-strong border border-white/10 space-y-4 rounded-3xl p-6 sm:p-8 text-white" aria-labelledby="admin-materials">
+      <h2 id="admin-materials" className="text-xl font-bold text-white">Tài liệu (PDF / PPTX)</h2>
 
-      {items.length === 0 && <p className="text-ink-soft">Chưa có tài liệu nào.</p>}
+      {items.length === 0 && <p className="text-slate-400">Chưa có tài liệu nào.</p>}
       <ul className="space-y-2">
         {items.map((m) => {
           const Icon = FILE_ICON[m.file_type]

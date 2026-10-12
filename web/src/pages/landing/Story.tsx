@@ -1,9 +1,9 @@
 import { useGSAP } from '@gsap/react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { AlertOctagon, ArrowRight, BookOpenCheck, Flame, TrendingUp } from 'lucide-react'
+import { AlertOctagon, ArrowRight, TrendingUp } from 'lucide-react'
 import { useRef } from 'react'
-import { CASE_STUDIES, SURVEY_STATS } from '../../data/course'
+import { SURVEY_STATS } from '../../data/course'
 import { paginate, type TourStops } from '../../lib/idleAutoScroll'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -126,29 +126,6 @@ export function Story() {
           </article>
         ))}
 
-        {/* 3 Case studies thực tế tại giảng đường */}
-        {CASE_STUDIES.map((c) => (
-          <article
-            key={c.title}
-            className="story-card story-glass border-amber-500/30 flex shrink-0 flex-col justify-between rounded-3xl p-7 transition-all duration-300 hover:border-amber-400/60 hover:shadow-[0_0_35px_rgba(251,191,36,0.2)] lg:h-[54vh] lg:w-[26vw] lg:min-w-80"
-          >
-            <div>
-              <div className="flex items-center justify-between gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/15 px-3 py-1 text-xs font-bold text-amber-300">
-                  <Flame size={14} className="text-amber-400" /> {c.tag}
-                </span>
-                <span className="rounded-full bg-white/5 border border-white/10 px-2.5 py-0.5 text-xs font-medium text-slate-300">
-                  {c.badge}
-                </span>
-              </div>
-              <h3 className="font-display mt-5 text-xl font-bold leading-snug text-white">{c.title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-slate-300">{c.desc}</p>
-            </div>
-            <div className="flex items-center gap-2 border-t border-white/10 pt-4 text-xs font-semibold text-amber-300">
-              <BookOpenCheck size={16} /> Bài học tư duy thực tiễn
-            </div>
-          </article>
-        ))}
 
         {/* Kết luận số liệu */}
         <article className="story-card story-glass-strong border-cyan-500/40 flex shrink-0 flex-col justify-center rounded-3xl p-8 shadow-[0_0_50px_rgba(34,211,238,0.25)] lg:h-[54vh] lg:w-[28vw] lg:p-10">

@@ -63,20 +63,20 @@ export default function ChatPage() {
   return (
     <div className="flex h-[calc(100dvh-3.75rem-6rem)] gap-4 p-3 sm:p-4 lg:h-dvh">
       {/* Danh sách hội thoại: luôn hiện trên desktop; trên mobile chỉ hiện khi chưa mở hội thoại */}
-      <aside className={`glass w-full flex-col overflow-hidden rounded-3xl lg:flex lg:w-80 lg:shrink-0 ${id ? 'hidden' : 'flex'}`}>
-        <div className="flex items-center justify-between p-4 pb-2">
-          <h1 className="text-xl font-extrabold">Trò chuyện</h1>
-          <button onClick={() => setPickerOpen(true)} className="btn-primary min-h-11 px-4 text-sm">
+      <aside className={`story-glass-strong border border-white/10 w-full flex-col overflow-hidden rounded-3xl lg:flex lg:w-80 lg:shrink-0 ${id ? 'hidden' : 'flex'}`}>
+        <div className="flex items-center justify-between p-4 pb-2 border-b border-white/10">
+          <h1 className="text-xl font-extrabold text-white">Trò chuyện</h1>
+          <button onClick={() => setPickerOpen(true)} className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-gradient-to-r from-cyan-500 to-brand px-4 text-sm font-semibold text-white shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:brightness-110 active:scale-95 transition-all">
             <Plus size={18} aria-hidden /> Chủ đề mới
           </button>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
-          {listError && <p className="p-3 text-sm text-red-700" role="alert">{listError}</p>}
+        <div className="min-h-0 flex-1 overflow-y-auto px-2 py-2">
+          {listError && <p className="p-3 text-sm text-rose-400" role="alert">{listError}</p>}
           {conversations === null && !listError && (
-            <p className="flex items-center gap-2 p-3 text-ink-soft"><Loader2 className="animate-spin" size={18} aria-hidden /> Đang tải…</p>
+            <p className="flex items-center gap-2 p-3 text-slate-400"><Loader2 className="animate-spin text-cyan-400" size={18} aria-hidden /> Đang tải…</p>
           )}
           {conversations?.length === 0 && (
-            <p className="p-3 text-ink-soft">Chưa có cuộc trò chuyện nào. Chọn một chủ đề để bắt đầu nhé!</p>
+            <p className="p-3 text-slate-400">Chưa có cuộc trò chuyện nào. Chọn một chủ đề để bắt đầu nhé!</p>
           )}
           <ul className="space-y-1">
             {conversations?.map((c) => (
@@ -84,18 +84,18 @@ export default function ChatPage() {
                 <Link
                   to={`/dashboard/tro-chuyen/${c.id}`}
                   aria-current={c.id === id ? 'page' : undefined}
-                  className={`flex min-h-16 items-center gap-3 rounded-2xl px-3 py-2 transition-colors ${
-                    c.id === id ? 'bg-white/90 shadow-sm' : 'hover:bg-white/60'
+                  className={`flex min-h-16 items-center gap-3 rounded-2xl px-3 py-2 transition-all ${
+                    c.id === id ? 'border border-cyan-400/50 bg-cyan-500/20 text-white shadow-[0_0_15px_rgba(34,211,238,0.2)]' : 'hover:bg-white/5 text-slate-300'
                   }`}
                 >
                   <Avatar archived={c.status === 'ARCHIVED'} />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate font-semibold">{topicTitle(c.topic, c.custom_topic)}</span>
-                    <span className="block truncate text-sm text-ink-soft">
+                    <span className="block truncate font-semibold text-white">{topicTitle(c.topic, c.custom_topic)}</span>
+                    <span className="block truncate text-sm text-slate-400">
                       {c.status === 'ARCHIVED' ? 'Đã lưu trữ' : 'Bạn luyện phản biện'}
                     </span>
                   </span>
-                  <time className="shrink-0 text-xs text-ink-soft" dateTime={c.last_interacted_at}>
+                  <time className="shrink-0 text-xs text-slate-400" dateTime={c.last_interacted_at}>
                     {timeLabel(c.last_interacted_at)}
                   </time>
                 </Link>
@@ -106,7 +106,7 @@ export default function ChatPage() {
       </aside>
 
       {/* Khung chat */}
-      <section className={`glass min-w-0 flex-1 flex-col overflow-hidden rounded-3xl lg:flex ${id ? 'flex' : 'hidden'}`}>
+      <section className={`story-glass-strong border border-white/10 min-w-0 flex-1 flex-col overflow-hidden rounded-3xl lg:flex ${id ? 'flex' : 'hidden'}`}>
         {id ? (
           <Thread
             key={id}
@@ -145,12 +145,12 @@ function Welcome({ onStart }: { onStart: () => void }) {
     <div className="grid flex-1 place-items-center p-8 text-center">
       <div className="max-w-md">
         <Avatar size={88} />
-        <h2 className="mt-6 text-2xl font-extrabold">Bạn luyện phản biện của bạn đây!</h2>
-        <p className="mt-2 text-ink-soft">
+        <h2 className="mt-6 text-2xl font-extrabold text-white">Bạn luyện phản biện của bạn đây!</h2>
+        <p className="mt-2 text-slate-300">
           Chọn một tình huống, nêu quan điểm, và chuẩn bị bị hỏi vặn kiểu Socrates. Lỡ khái quát vội, công kích cá nhân
           hay dựng bù nhìn thì… sẽ bị trêu một chút đấy.
         </p>
-        <button onClick={onStart} className="btn-accent mt-6">
+        <button onClick={onStart} className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-brand px-6 font-semibold text-white shadow-[0_0_25px_rgba(34,211,238,0.35)] hover:brightness-110 active:scale-95 transition-all cursor-pointer">
           <Sparkles size={18} aria-hidden /> Chọn chủ đề
         </button>
       </div>
@@ -243,56 +243,56 @@ function Thread({
 
   return (
     <>
-      <header className="flex items-center gap-3 border-b border-white/70 px-3 py-3 sm:px-5">
-        <Link to="/dashboard/tro-chuyen" className="grid size-11 place-items-center rounded-full hover:bg-white/70 lg:hidden" aria-label="Quay lại danh sách">
+      <header className="flex items-center gap-3 border-b border-white/10 px-3 py-3 sm:px-5">
+        <Link to="/dashboard/tro-chuyen" className="grid size-11 place-items-center rounded-full hover:bg-white/10 text-slate-400 hover:text-white lg:hidden" aria-label="Quay lại danh sách">
           <ArrowLeft size={20} aria-hidden />
         </Link>
         <Avatar archived={conversation?.status === 'ARCHIVED'} />
         <div className="min-w-0 flex-1">
-          <h2 className="truncate font-bold">{topicTitle(conversation?.topic ?? null, conversation?.custom_topic)}</h2>
-          <p className="truncate text-sm text-ink-soft">{typing ? 'Đang soạn tin…' : <><span className="max-sm:hidden">Bạn luyện phản biện · </span>Luôn online</>}</p>
+          <h2 className="truncate font-bold text-white">{topicTitle(conversation?.topic ?? null, conversation?.custom_topic)}</h2>
+          <p className="truncate text-sm text-slate-400">{typing ? 'Đang soạn tin…' : <><span className="max-sm:hidden">Bạn luyện phản biện · </span>Luôn online</>}</p>
         </div>
         <QuotaRings used={used} limit={TOKEN_LIMIT} dailyUsed={dailyUsed} dailyLimit={DAILY_TOKEN_LIMIT} />
       </header>
 
       <div ref={scrollRef} className="min-h-0 flex-1 space-y-3 overflow-y-auto px-3 py-5 sm:px-6" aria-live="polite">
         {conversation?.context_summary && (
-          <div className="mx-auto flex max-w-lg gap-3 rounded-2xl bg-amber/15 px-4 py-3 text-sm">
-            <Archive size={18} className="mt-0.5 shrink-0 text-flame-deep" aria-hidden />
+          <div className="mx-auto flex max-w-lg gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+            <Archive size={18} className="mt-0.5 shrink-0 text-amber-400" aria-hidden />
             <p><strong>Tóm tắt phần đã lưu trữ:</strong> {conversation.context_summary}</p>
           </div>
         )}
         {messages === null && !error && (
-          <p className="flex justify-center gap-2 text-ink-soft"><Loader2 className="animate-spin" size={18} aria-hidden /> Đang tải…</p>
+          <p className="flex justify-center gap-2 text-slate-400"><Loader2 className="animate-spin text-cyan-400" size={18} aria-hidden /> Đang tải…</p>
         )}
         {messages?.map((m) => <Bubble key={m.id} message={m} />)}
         {typing && <TypingDots />}
       </div>
 
       {error && (
-        <p role="alert" className="mx-3 mb-2 flex items-center justify-between gap-2 rounded-2xl bg-red-50 px-4 py-2 text-sm text-red-700 sm:mx-6">
+        <p role="alert" className="mx-3 mb-2 flex items-center justify-between gap-2 rounded-2xl border border-rose-500/40 bg-rose-950/40 px-4 py-2 text-sm text-rose-300 sm:mx-6">
           {error}
-          <button onClick={() => setError(null)} className="grid size-9 place-items-center rounded-full hover:bg-red-100" aria-label="Đóng thông báo">
+          <button onClick={() => setError(null)} className="grid size-9 place-items-center rounded-full hover:bg-white/10 text-slate-400 hover:text-white" aria-label="Đóng thông báo">
             <X size={16} aria-hidden />
           </button>
         </p>
       )}
 
       {exhausted ? (
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/70 p-4 sm:px-6">
-          <p className="text-sm text-ink-soft">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 p-4 sm:px-6">
+          <p className="text-sm text-slate-400">
             {dailyOut
               ? 'Hôm nay bạn đã luyện hết lượt rồi 💪 0h mai quay lại luyện tiếp nhé!'
               : 'Cuộc trò chuyện này đã dùng hết lượt. Mở cuộc mới để luyện tiếp nhé!'}
           </p>
           {!dailyOut && (
-            <button onClick={onNewChat} className="btn-primary min-h-11 px-4 text-sm">
+            <button onClick={onNewChat} className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-gradient-to-r from-cyan-500 to-brand px-4 text-sm font-semibold text-white shadow-[0_0_15px_rgba(34,211,238,0.3)]">
               <Plus size={18} aria-hidden /> Trò chuyện mới
             </button>
           )}
         </div>
       ) : (
-      <form onSubmit={send} className="flex items-end gap-2 border-t border-white/70 p-3 sm:px-5">
+      <form onSubmit={send} className="flex items-end gap-2 border-t border-white/10 p-3 sm:px-5">
         <label htmlFor="chat-input" className="sr-only">Tin nhắn</label>
         <textarea
           id="chat-input"
@@ -303,12 +303,12 @@ function Thread({
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={onKeyDown}
           placeholder="Nêu quan điểm của bạn… (Enter để gửi)"
-          className="input max-h-40 min-h-12 resize-none rounded-3xl py-3 [field-sizing:content]"
+          className="story-glass max-h-40 min-h-12 w-full resize-none rounded-3xl border border-white/15 px-4 py-3 text-base text-white placeholder:text-slate-400 focus:border-cyan-400 focus:outline-none focus:ring-4 focus:ring-cyan-400/20 [field-sizing:content]"
         />
         <button
           type="submit"
           disabled={!draft.trim() || typing}
-          className="grid size-12 shrink-0 cursor-pointer place-items-center rounded-full bg-gradient-to-br from-brand to-teal-deep text-white shadow-lg transition-transform active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+          className="grid size-12 shrink-0 cursor-pointer place-items-center rounded-full bg-gradient-to-r from-cyan-500 to-indigo-600 text-white shadow-[0_0_20px_rgba(34,211,238,0.4)] transition-transform active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
           aria-label="Gửi"
         >
           <SendHorizonal size={20} aria-hidden />
@@ -328,15 +328,15 @@ function Bubble({ message: m }: { message: UiMessage }) {
         <div
           className={`rounded-3xl px-4 py-2.5 whitespace-pre-wrap break-words ${
             mine
-              ? 'rounded-br-lg bg-gradient-to-br from-brand to-teal-deep text-white'
-              : 'rounded-bl-lg bg-white/90 text-ink shadow-sm'
+              ? 'rounded-br-lg bg-gradient-to-r from-cyan-600 to-indigo-600 text-white shadow-[0_0_15px_rgba(34,211,238,0.25)]'
+              : 'rounded-bl-lg story-glass border border-white/10 text-slate-100 shadow-md'
           } ${m.pending ? 'opacity-70' : ''}`}
         >
           {m.content}
           {m.meme_url && <Meme url={m.meme_url} />}
         </div>
         {m.fallacy_code && (
-          <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-amber/25 px-2.5 py-0.5 text-xs font-semibold text-flame-deep">
+          <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-rose-500/40 bg-rose-500/20 px-2.5 py-0.5 text-xs font-semibold text-rose-300">
             <AlertTriangle size={12} aria-hidden /> {FALLACY_LABELS[m.fallacy_code]}
           </span>
         )}
@@ -356,7 +356,7 @@ function Meme({ url }: { url: string }) {
         loading="lazy"
         referrerPolicy="no-referrer"
       />
-      {fromGiphy && <figcaption className="mt-1 text-[11px] text-ink-soft">Powered by GIPHY</figcaption>}
+      {fromGiphy && <figcaption className="mt-1 text-[11px] text-slate-400">Powered by GIPHY</figcaption>}
     </figure>
   )
 }
@@ -365,9 +365,9 @@ function TypingDots() {
   return (
     <div className="flex items-end gap-2" aria-label="Đang soạn tin">
       <Avatar size={30} archived />
-      <div className="flex gap-1 rounded-3xl rounded-bl-lg bg-white/90 px-4 py-3.5 shadow-sm">
+      <div className="flex gap-1 rounded-3xl rounded-bl-lg story-glass border border-white/10 px-4 py-3.5 shadow-sm">
         {[0, 1, 2].map((i) => (
-          <span key={i} className="typing-dot size-2 rounded-full bg-ink-soft" style={{ animationDelay: `${i * 0.15}s` }} />
+          <span key={i} className="typing-dot size-2 rounded-full bg-cyan-400" style={{ animationDelay: `${i * 0.15}s` }} />
         ))}
       </div>
     </div>
@@ -408,15 +408,15 @@ function TopicPicker({
       onClose={onClose}
       onClick={(e) => e.target === ref.current && onClose()}
       aria-labelledby="picker-title"
-      className="glass-strong m-auto w-[min(40rem,calc(100vw-2rem))] rounded-3xl p-0 text-ink backdrop:bg-ink/30 backdrop:backdrop-blur-sm"
+      className="story-glass-strong border border-white/15 m-auto w-[min(40rem,calc(100vw-2rem))] rounded-3xl p-0 text-white backdrop:bg-slate-950/80 backdrop:backdrop-blur-md shadow-[0_25px_60px_rgba(0,0,0,0.8)]"
     >
       <div className="p-6 sm:p-8">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 id="picker-title" className="text-2xl font-extrabold">Hôm nay mình tranh luận về gì?</h2>
-            <p className="mt-1 text-ink-soft">Các tình huống lấy từ nội dung khóa học ThinkingLab.</p>
+            <h2 id="picker-title" className="text-2xl font-extrabold text-white">Hôm nay mình tranh luận về gì?</h2>
+            <p className="mt-1 text-slate-400">Các tình huống lấy từ nội dung khóa học ThinkingLab.</p>
           </div>
-          <button onClick={onClose} className="grid size-11 shrink-0 place-items-center rounded-full hover:bg-white/70" aria-label="Đóng">
+          <button onClick={onClose} className="grid size-11 shrink-0 place-items-center rounded-full text-slate-400 hover:bg-white/10 hover:text-white" aria-label="Đóng">
             <X size={20} aria-hidden />
           </button>
         </div>
@@ -426,13 +426,13 @@ function TopicPicker({
               <button
                 onClick={() => pick(t.id)}
                 disabled={busy !== null}
-                className="flex min-h-20 w-full cursor-pointer items-center gap-3 rounded-2xl bg-white/70 p-4 text-left transition-colors hover:bg-white disabled:cursor-wait disabled:opacity-60"
+                className="flex min-h-20 w-full cursor-pointer items-center gap-3 rounded-2xl story-glass border border-white/10 p-4 text-left transition-all hover:border-cyan-400/50 hover:bg-slate-800/60 disabled:cursor-wait disabled:opacity-60"
               >
                 <span className="min-w-0 flex-1">
-                  <span className="block font-bold">{t.title}</span>
-                  <span className="block text-sm text-teal-deep">{t.hint}</span>
+                  <span className="block font-bold text-white">{t.title}</span>
+                  <span className="block text-sm text-cyan-400">{t.hint}</span>
                 </span>
-                {busy === t.id && <Loader2 className="shrink-0 animate-spin text-brand" size={20} aria-hidden />}
+                {busy === t.id && <Loader2 className="shrink-0 animate-spin text-cyan-400" size={20} aria-hidden />}
               </button>
             </li>
           ))}
@@ -442,18 +442,18 @@ function TopicPicker({
             e.preventDefault()
             if (customOk) pick(CUSTOM_TOPIC_ID, custom.trim())
           }}
-          className="mt-3 rounded-2xl border-2 border-dashed border-brand/30 bg-white/50 p-4"
+          className="mt-3 rounded-2xl border-2 border-dashed border-cyan-400/30 bg-slate-900/60 p-4"
         >
-          <label htmlFor="custom-topic" className="flex items-center gap-2 font-bold">
-            <PenLine size={18} className="text-brand" aria-hidden /> Chủ đề của bạn
+          <label htmlFor="custom-topic" className="flex items-center gap-2 font-bold text-white">
+            <PenLine size={18} className="text-cyan-400" aria-hidden /> Chủ đề của bạn
           </label>
-          <p id="custom-topic-hint" className="mt-0.5 text-sm text-ink-soft">
+          <p id="custom-topic-hint" className="mt-0.5 text-sm text-slate-400">
             Một vấn đề bạn muốn tranh luận. Lab sẽ duyệt nhanh trước khi bắt đầu.
           </p>
           <div className="mt-3 flex flex-col gap-2 sm:flex-row">
             <input
               id="custom-topic"
-              className="input min-h-11 flex-1"
+              className="story-glass min-h-11 flex-1 rounded-2xl border border-white/15 px-4 text-base text-white placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-4 focus:ring-cyan-400/20"
               value={custom}
               maxLength={CUSTOM_TOPIC_MAX}
               onChange={(e) => setCustom(e.target.value)}
@@ -464,17 +464,17 @@ function TopicPicker({
             <button
               type="submit"
               disabled={busy !== null || !customOk}
-              className="btn-primary min-h-11 px-5 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-cyan-500 to-brand px-5 text-sm font-semibold text-white shadow-[0_0_15px_rgba(34,211,238,0.3)] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {busy === CUSTOM_TOPIC_ID ? <Loader2 className="animate-spin" size={18} aria-hidden /> : <Sparkles size={18} aria-hidden />}
               {busy === CUSTOM_TOPIC_ID ? 'Đang duyệt…' : 'Bắt đầu'}
             </button>
           </div>
-          <p className="mt-1 text-right text-xs text-ink-soft">
+          <p className="mt-1 text-right text-xs text-slate-500">
             {custom.length}/{CUSTOM_TOPIC_MAX}
           </p>
         </form>
-        {error &&<p role="alert" className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
+        {error && <p role="alert" className="mt-4 rounded-xl border border-rose-500/40 bg-rose-950/40 px-4 py-3 text-sm text-rose-300">{error}</p>}
       </div>
     </dialog>
   )

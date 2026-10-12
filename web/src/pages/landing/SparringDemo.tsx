@@ -7,12 +7,11 @@ type ChoiceId = 'ad_hominem' | 'naive' | 'are'
 
 interface Choice {
   id: ChoiceId
-  type: string
   label: string
-  badgeColor: string
   quote: string
   botReaction: {
     title: string
+    badge: string
     feedback: string
     isSuccess: boolean
     tone: 'alert' | 'warning' | 'success'
@@ -22,12 +21,11 @@ interface Choice {
 const CHOICES: Choice[] = [
   {
     id: 'ad_hominem',
-    type: 'Lựa chọn 1: Công kích cá nhân',
-    label: 'Công kích cá nhân',
-    badgeColor: 'border-rose-500/40 bg-rose-500/20 text-rose-300',
+    label: 'Phương án A',
     quote: '“Chỉ có mấy người giao tiếp kém, suốt ngày thu mình lại mới có suy nghĩ thiển cận như vậy!”',
     botReaction: {
       title: '⚠️ Ad Hominem detected!',
+      badge: 'Ngụy biện Ad Hominem',
       feedback: 'Bạn đang tấn công cá nhân người nói thay vì giải quyết vấn đề rồi! Khi công kích tính cách hay hoàn cảnh đối phương, bạn đã tự làm yếu lập luận của chính mình.',
       isSuccess: false,
       tone: 'alert',
@@ -35,12 +33,11 @@ const CHOICES: Choice[] = [
   },
   {
     id: 'naive',
-    type: 'Lựa chọn 2: Ngây thơ thiếu dẫn chứng',
-    label: 'Cảm tính & Thiếu chứng cứ',
-    badgeColor: 'border-amber-500/40 bg-amber-500/20 text-amber-300',
+    label: 'Phương án B',
     quote: '“Sai bét, sếp nào hay sách báo nào cũng bảo kỹ năng mềm là quan trọng nhất mà!”',
     botReaction: {
       title: 'Hơi ngây thơ nha!',
+      badge: 'Thiếu căn cứ thực chứng',
       feedback: 'Lý lẽ này dựa trên cảm tính nhiều quá, chưa thấy bằng chứng cụ thể đâu cả. "Ai cũng bảo" là bẫy ngụy biện đám đông hoặc viện dẫn thẩm quyền mơ hồ.',
       isSuccess: false,
       tone: 'warning',
@@ -48,12 +45,11 @@ const CHOICES: Choice[] = [
   },
   {
     id: 'are',
-    type: 'Lựa chọn 3: Chuẩn mô hình ARE',
-    label: 'Chuẩn ARE (Luận điểm - Lý lẽ - Dẫn chứng)',
-    badgeColor: 'border-emerald-500/40 bg-emerald-500/20 text-emerald-300',
+    label: 'Phương án C',
     quote: '“Chuyên môn là điều kiện cần, nhưng kỹ năng mềm là điều kiện đủ để tiến xa. Theo nghiên cứu của Đại học Harvard, 85% thành công trong công việc đến từ kỹ năng mềm, chỉ 15% đến từ kiến thức chuyên môn cứng...”',
     botReaction: {
       title: 'Ding! 👏 Xuất sắc!',
+      badge: 'Chuẩn mô hình ARE',
       feedback: 'Lập luận ARE (Luận điểm - Lý lẽ - Dẫn chứng) chuẩn chỉ! Bạn có tố chất phản biện xuất sắc đó! Bạn tách bạch rõ ràng điều kiện cần/đủ và đưa ra số liệu kiểm chứng uy tín.',
       isSuccess: true,
       tone: 'success',
@@ -94,7 +90,7 @@ export function SparringDemo() {
             Đấu trường phản biện: <span className="text-cyan-400 text-glow-cyan">Bạn sẽ đáp lại thế nào?</span>
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-300">
-            Chọn một trong 3 cách đáp trả dưới đây và xem AI phân tích logic trong tích tắc.
+            Chọn một trong 3 phương án phản hồi dưới đây để AI phân tích tính logic và phát hiện bẫy ngụy biện.
           </p>
         </div>
 
@@ -111,7 +107,7 @@ export function SparringDemo() {
           </blockquote>
         </div>
 
-        {/* 3 Lựa chọn phản biện */}
+        {/* 3 Lựa chọn phản biện (tiêu đề trung tính, không tiết lộ trước đáp án) */}
         <div className="mt-6 grid gap-4 lg:grid-cols-3" role="radiogroup" aria-label="Các phương án phản biện">
           {CHOICES.map((choice) => {
             const isSelected = selected === choice.id
@@ -122,27 +118,21 @@ export function SparringDemo() {
                 role="radio"
                 aria-checked={isSelected}
                 onClick={() => handleSelect(choice.id)}
-                className={`group relative flex min-h-[150px] flex-col justify-between rounded-2xl p-5 text-left transition-all duration-200 hover:-translate-y-1 cursor-pointer backdrop-blur-xl ${
+                className={`group relative flex min-h-[160px] flex-col justify-between rounded-2xl p-5 text-left transition-all duration-200 hover:-translate-y-1 cursor-pointer backdrop-blur-xl ${
                   isSelected
-                    ? choice.id === 'are'
-                      ? 'border-2 border-emerald-400 bg-emerald-950/40 ring-1 ring-emerald-400/50 shadow-[0_0_35px_rgba(16,185,129,0.3)]'
-                      : choice.id === 'ad_hominem'
-                        ? 'border-2 border-rose-400 bg-rose-950/40 ring-1 ring-rose-400/50 shadow-[0_0_35px_rgba(244,63,94,0.3)]'
-                        : 'border-2 border-amber-400 bg-amber-950/40 ring-1 ring-amber-400/50 shadow-[0_0_35px_rgba(245,158,11,0.3)]'
+                    ? 'border-2 border-cyan-400 bg-slate-900/90 ring-1 ring-cyan-400/50 shadow-[0_0_30px_rgba(34,211,238,0.25)]'
                     : 'story-glass border border-white/10 hover:border-cyan-400/40 hover:bg-slate-800/40'
                 }`}
               >
                 <div>
                   <div className="flex items-center justify-between gap-2">
-                    <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-bold ${choice.badgeColor}`}>
+                    <span className="inline-flex items-center rounded-full border border-white/15 bg-white/5 px-2.5 py-0.5 text-xs font-bold text-slate-300 font-mono">
                       {choice.label}
                     </span>
                     <span
-                      className={`grid size-6 place-items-center rounded-full border text-xs font-bold ${
+                      className={`grid size-6 place-items-center rounded-full border text-xs font-bold transition-all ${
                         isSelected
-                          ? choice.id === 'are'
-                            ? 'border-emerald-400 bg-emerald-500 text-white shadow-[0_0_12px_rgba(16,185,129,0.5)]'
-                            : 'border-rose-400 bg-rose-500 text-white shadow-[0_0_12px_rgba(244,63,94,0.5)]'
+                          ? 'border-cyan-400 bg-cyan-400 text-slate-950 font-black shadow-[0_0_12px_rgba(34,211,238,0.6)]'
                           : 'border-white/20 text-transparent group-hover:border-cyan-400/60'
                       }`}
                     >
@@ -154,7 +144,7 @@ export function SparringDemo() {
                   </p>
                 </div>
                 <span className="mt-3 block text-xs font-semibold text-cyan-400 group-hover:text-cyan-300">
-                  Bấm để kiểm tra phản hồi →
+                  {isSelected ? 'Đang phân tích phương án này ↓' : 'Bấm để kiểm tra phản hồi →'}
                 </span>
               </button>
             )
@@ -185,15 +175,15 @@ export function SparringDemo() {
                   </h3>
                   {activeChoice.botReaction.isSuccess ? (
                     <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/20 px-2.5 py-0.5 text-xs font-bold text-emerald-300">
-                      <CheckCircle2 size={14} /> Chuẩn ARE
+                      <CheckCircle2 size={14} /> {activeChoice.botReaction.badge}
                     </span>
                   ) : activeChoice.botReaction.tone === 'alert' ? (
                     <span className="inline-flex items-center gap-1 rounded-full border border-rose-500/40 bg-rose-500/20 px-2.5 py-0.5 text-xs font-bold text-rose-300">
-                      <ShieldAlert size={14} /> Ngụy biện Ad Hominem
+                      <ShieldAlert size={14} /> {activeChoice.botReaction.badge}
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/20 px-2.5 py-0.5 text-xs font-bold text-amber-300">
-                      <HelpCircle size={14} /> Thiếu căn cứ
+                      <HelpCircle size={14} /> {activeChoice.botReaction.badge}
                     </span>
                   )}
                 </div>
