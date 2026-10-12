@@ -204,9 +204,6 @@ export function ArenaGamification() {
                   </button>
                 )
               })}
-              <span className="text-[11px] text-slate-400 italic">
-                (Bấm icon để xem chi tiết)
-              </span>
             </div>
 
             {/* Chi tiết huy hiệu mở ra khi bấm vào icon */}

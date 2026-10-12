@@ -130,22 +130,34 @@ export default function ChatPage() {
 
 function Avatar({ archived = false, size = 44 }: { archived?: boolean; size?: number }) {
   return (
-    <span className="relative shrink-0" style={{ width: size, height: size }}>
-      <span className="grid size-full place-items-center rounded-full bg-gradient-to-br from-brand via-teal to-amber p-[2px]">
-        <span className="grid size-full place-items-center rounded-full bg-white">
-          <img src={logo} alt="" className="size-[78%]" />
-        </span>
-      </span>
-      {!archived && <span className="absolute right-0 bottom-0 size-3 rounded-full border-2 border-white bg-emerald-500" aria-hidden />}
-    </span>
+    <div
+      className="relative inline-flex shrink-0 aspect-square items-center justify-center rounded-full"
+      style={{ width: size, height: size, minWidth: size, minHeight: size }}
+    >
+      <div className="size-full rounded-full bg-gradient-to-br from-cyan-400 via-sky-500 to-amber-400 p-[2.5px] shadow-[0_0_20px_rgba(34,211,238,0.45)]">
+        <div className="size-full rounded-full bg-white flex items-center justify-center overflow-hidden shadow-inner">
+          <img
+            src={logo}
+            alt="ThinkingLab"
+            className="size-[84%] object-contain aspect-square select-none filter contrast-105 brightness-105"
+          />
+        </div>
+      </div>
+      {!archived && (
+        <span
+          className="absolute right-0 bottom-0 size-3 rounded-full border-2 border-slate-900 bg-emerald-400 shadow-[0_0_8px_#34d399]"
+          aria-hidden
+        />
+      )}
+    </div>
   )
 }
 
 function Welcome({ onStart }: { onStart: () => void }) {
   return (
     <div className="grid flex-1 place-items-center p-8 text-center">
-      <div className="max-w-md">
-        <Avatar size={88} />
+      <div className="max-w-md flex flex-col items-center">
+        <Avatar size={96} />
         <h2 className="mt-6 text-2xl font-extrabold text-white">Bạn luyện phản biện của bạn đây!</h2>
         <p className="mt-2 text-slate-300">
           Chọn một tình huống, nêu quan điểm, và chuẩn bị bị hỏi vặn kiểu Socrates. Lỡ khái quát vội, công kích cá nhân

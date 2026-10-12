@@ -1,0 +1,14 @@
+{
+  "name": "thinkinglab-root",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix web run dev",
+    "dev:web": "npm --prefix web run dev",
+    "dev:api": "python api/chat.py",
+    "dev:all": "run-dev.bat",
+    "build": "npm --prefix web run build",
+    "test": "npm --prefix web test",
+    "test:py": "python -m pytest",
+    "e2e": "npm --prefix web run e2e"
+  }
+}
