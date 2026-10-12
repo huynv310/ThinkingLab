@@ -86,7 +86,7 @@ export function SparringDemo() {
             Đấu trường phản biện: <span className="text-cyan-400 text-glow-cyan">Bạn sẽ đáp lại thế nào?</span>
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-300">
-            Chọn một trong 3 phương án phản hồi dưới đây để AI phân tích tính logic và phát hiện bẫy ngụy biện.
+            Chọn một trong ba phương án dưới đây
           </p>
         </div>
 
