@@ -8,6 +8,7 @@ import './index.css'
 import { lazy, StrictMode, Suspense, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { AuthModal } from './components/AuthModal'
 import { AuthProvider, useAuth } from './lib/auth'
 import { initInteractionSound } from './lib/sound'
 
@@ -28,7 +29,7 @@ function RequireAuth({ children }: { children: ReactNode }) {
   const { session, loading } = useAuth()
   const location = useLocation()
   if (loading) return <Loading />
-  if (!session) return <Navigate to="/auth?mode=login" replace state={{ from: location.pathname }} />
+  if (!session) return <Navigate to="/?mode=login" replace state={{ from: location.pathname }} />
   return children
 }
 
@@ -36,9 +37,6 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AuthProvider>
       <BrowserRouter>
-        <div className="aurora" aria-hidden>
-          <span />
-        </div>
         <Suspense fallback={<Loading />}>
           <Routes>
             <Route path="/" element={<Landing />} />
@@ -60,6 +58,7 @@ createRoot(document.getElementById('root')!).render(
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          <AuthModal />
         </Suspense>
       </BrowserRouter>
     </AuthProvider>

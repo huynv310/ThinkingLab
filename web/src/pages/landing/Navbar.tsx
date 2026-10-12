@@ -73,7 +73,7 @@ export function Navbar() {
             {soundActive ? <Volume2 size={18} className="text-cyan-400" aria-hidden /> : <VolumeX size={18} aria-hidden />}
           </button>
 
-          <div className="shrink-0 max-sm:[&_.btn-accent]:px-4 max-sm:[&_.btn-accent_svg]:hidden [&_.btn-ghost]:hidden sm:[&_.btn-ghost]:inline-flex whitespace-nowrap">
+          <div className="shrink-0 flex items-center whitespace-nowrap">
             <AuthButtons />
           </div>
         </div>
