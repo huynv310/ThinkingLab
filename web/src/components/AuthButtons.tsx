@@ -20,18 +20,19 @@ export function AuthButtons({ size = 'md' }: { size?: 'md' | 'lg' }) {
     )
   }
   return (
-    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+    <div className="flex items-center gap-1.5 sm:gap-3">
       <button
         type="button"
         onClick={() => openAuth('signup')}
-        className={`inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-brand px-5 font-semibold text-white shadow-[0_0_20px_rgba(34,211,238,0.35)] transition-all hover:brightness-110 active:scale-95 ${big}`}
+        className={`inline-flex min-h-11 cursor-pointer items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-cyan-500 to-brand px-3 sm:px-5 text-xs sm:text-sm font-semibold text-white shadow-[0_0_20px_rgba(34,211,238,0.35)] transition-all hover:brightness-110 active:scale-95 ${big}`}
       >
-        Đăng ký học <ArrowRight size={18} className="hidden sm:inline" aria-hidden />
+        <span>Đăng ký<span className="hidden sm:inline"> học</span></span>
+        <ArrowRight size={16} className="hidden md:inline" aria-hidden />
       </button>
       <button
         type="button"
         onClick={() => openAuth('login')}
-        className={`inline-flex min-h-11 cursor-pointer items-center justify-center rounded-full border border-white/15 bg-white/5 px-5 font-semibold text-slate-200 backdrop-blur-md transition-all hover:bg-white/10 hover:border-cyan-400/50 hover:text-white ${big}`}
+        className={`inline-flex min-h-11 cursor-pointer items-center justify-center rounded-full border border-white/15 bg-white/5 px-3 sm:px-5 text-xs sm:text-sm font-semibold text-slate-200 backdrop-blur-md transition-all hover:bg-white/10 hover:border-cyan-400/50 hover:text-white ${big}`}
       >
         Đăng nhập
       </button>

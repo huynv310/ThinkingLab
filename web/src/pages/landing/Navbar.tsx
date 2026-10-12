@@ -34,17 +34,17 @@ export function Navbar() {
   }, [])
 
   return (
-    <header className="fixed inset-x-0 top-0 z-40 px-3 pt-2.5 sm:px-4 sm:pt-4 transition-transform duration-300">
+    <header className="fixed inset-x-0 top-0 z-40 px-2 pt-2 sm:px-4 sm:pt-4 transition-transform duration-300">
       <nav
         aria-label="Điều hướng chính"
-        className={`mx-auto flex items-center justify-between gap-4 rounded-full py-1.5 pr-2 pl-3.5 sm:py-2 sm:pr-2.5 sm:pl-4 transition-all duration-300 ${
+        className={`mx-auto flex items-center justify-between gap-1.5 sm:gap-4 rounded-full py-1.5 pr-2 pl-2.5 sm:py-2 sm:pr-2.5 sm:pl-4 transition-all duration-300 ${
           scrolled
             ? 'max-w-4xl bg-slate-950/90 backdrop-blur-2xl border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.7)]'
             : 'max-w-6xl bg-slate-900/60 backdrop-blur-xl border border-white/10 shadow-lg'
         }`}
       >
-        <div className="flex items-center gap-2 shrink-0">
-          <Logo size={36} />
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <Logo size={34} className="[&>span:last-child]:hidden min-[410px]:[&>span:last-child]:inline text-base sm:text-xl" />
         </div>
 
         <ul className="hidden items-center gap-1 md:flex shrink-0">

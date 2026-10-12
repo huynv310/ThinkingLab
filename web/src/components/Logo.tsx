@@ -15,7 +15,7 @@ export function Logo({
   return (
     <Link
       to={to}
-      className={`group flex min-h-11 items-center gap-3 rounded-full shrink-0 ${className}`}
+      className={`group flex min-h-11 min-w-11 items-center gap-3 rounded-full shrink-0 ${className}`}
       aria-label="ThinkingLab – trang chủ"
     >
       <span
