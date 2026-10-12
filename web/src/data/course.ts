@@ -230,7 +230,32 @@ export const COURSE_FACTS = {
 }
 
 export const SURVEY_STATS = [
-  { value: '60,6%', label: 'tự đánh giá kỹ năng tư duy phản biện chỉ ở mức trung bình (3/5)' },
   { value: '66,7%', label: 'gặp khó khăn khi kiểm chứng độ tin cậy của thông tin' },
-  { value: '57,6%', label: 'ngại phát biểu vì sợ sai' },
+  { value: '60,6%', label: 'tự đánh giá kỹ năng tư duy phản biện chỉ ở mức trung bình (3/5)' },
+  { value: '57,6%', label: 'ngại phát biểu vì sợ sai hoặc bị phán xét' },
+  { value: '57,6%', label: 'dễ bị cuốn theo tâm lý bầy đàn và thông tin lan truyền' },
+  { value: '54,5%', label: 'gặp khó khăn khi diễn đạt ý kiến mạch lạc' },
+  { value: '51,5%', label: 'chật vật trong việc cấu trúc luận điểm thuyết phục' },
 ]
+
+export const CASE_STUDIES = [
+  {
+    tag: 'Tin đồn học đường',
+    title: '“Thầy A chấm gắt rớt nửa lớp!”',
+    desc: 'Bẫy khái quát vội vã & tâm lý bầy đàn: Lan truyền hoang mang vô căn cứ qua group chat.',
+    badge: 'Khái quát vội vã',
+  },
+  {
+    tag: 'Áp lực đồ án',
+    title: '“Đã lỡ thức 3 đêm rồi, không thể bỏ!”',
+    desc: 'Ảo giác chi phí chìm: Càng tiếc công sức bỏ ra, càng bám víu giải pháp ngõ cụt.',
+    badge: 'Chi phí chìm',
+  },
+  {
+    tag: 'Góc nhìn công nghệ',
+    title: '“Công nghệ này là xịn nhất thiên hạ!”',
+    desc: 'Thiên kiến xác nhận: Chỉ đọc bài ca ngợi và tự bịt mắt trước phản biện khách quan.',
+    badge: 'Thiên kiến xác nhận',
+  },
+]
+

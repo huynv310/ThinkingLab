@@ -1,7 +1,7 @@
 import { useGSAP } from '@gsap/react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { MapPin, MonitorPlay } from 'lucide-react'
+import { MapPin, MonitorPlay, Sparkles } from 'lucide-react'
 import { useRef } from 'react'
 import logo from '../../assets/logo.webp'
 import { AuthButtons } from '../../components/AuthButtons'
@@ -9,7 +9,7 @@ import { COURSE_FACTS } from '../../data/course'
 
 gsap.registerPlugin(ScrollTrigger)
 
-/** Lời kêu gọi + footer. */
+/** Lời kêu gọi hành động cuối trang + Footer bản quyền theo phong cách One Page Love. */
 export function FinalCta() {
   const root = useRef<HTMLElement>(null)
 
@@ -18,11 +18,11 @@ export function FinalCta() {
       const mm = gsap.matchMedia()
       mm.add('(prefers-reduced-motion: no-preference)', () => {
         gsap.from('.cta-panel', {
-          scale: 0.92,
-          y: 60,
+          scale: 0.95,
+          y: 40,
           autoAlpha: 0,
-          ease: 'expo.out',
-          duration: 1.2,
+          ease: 'power3.out',
+          duration: 0.8,
           scrollTrigger: { trigger: '.cta-panel', start: 'top 85%' },
         })
       })
@@ -31,29 +31,47 @@ export function FinalCta() {
   )
 
   return (
-    <section data-tour-stop id="dang-ky" ref={root} aria-labelledby="cta-title" className="px-4 pt-12 pb-10">
-      <div className="cta-panel glass-strong relative mx-auto max-w-5xl overflow-hidden rounded-[2.5rem] px-6 py-14 text-center sm:px-12 sm:py-20">
-        <img src={logo} alt="" width={80} height={80} className="mx-auto" />
-        <h2 id="cta-title" className="mx-auto mt-6 max-w-3xl text-4xl leading-tight font-extrabold sm:text-5xl">
-          Sẵn sàng rèn góc nhìn sắc bén và <span className="text-flame-deep">dám lên tiếng</span>?
+    <section data-tour-stop id="dang-ky" ref={root} aria-labelledby="cta-title" className="relative px-4 pt-16 pb-12 overflow-hidden">
+      {/* Background portal glow */}
+      <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 size-96 rounded-full bg-gradient-to-tr from-cyan-500/20 via-indigo-500/15 to-rose-500/20 blur-3xl" aria-hidden />
+
+      <div className="cta-panel story-glass-strong relative mx-auto max-w-5xl overflow-hidden rounded-[2.5rem] border border-white/15 px-6 py-14 text-center sm:px-12 sm:py-20 shadow-[0_30px_80px_rgba(0,0,0,0.8)]">
+        <div className="inline-flex items-center gap-2 rounded-full border border-rose-500/30 bg-rose-500/10 px-3.5 py-1 text-xs font-bold tracking-widest text-rose-300 uppercase backdrop-blur-md">
+          <Sparkles size={14} className="text-rose-400" />
+          Chương V // Khai Phóng Tiềm Năng
+        </div>
+
+        <div className="relative mx-auto mt-6 size-20">
+          <div className="absolute -inset-2 rounded-full bg-cyan-400/30 blur-lg animate-pulse" />
+          <img src={logo} alt="" width={80} height={80} className="relative mx-auto size-20 object-contain drop-shadow-[0_0_20px_rgba(34,211,238,0.5)]" />
+        </div>
+
+        <h2 id="cta-title" className="font-display mx-auto mt-6 max-w-3xl text-3xl leading-tight font-extrabold sm:text-5xl text-white">
+          Sẵn sàng nâng cấp góc nhìn sắc bén và <span className="text-rose-400 text-glow-rose">dám lên tiếng</span>?
         </h2>
+        <p className="mx-auto mt-4 max-w-xl text-base text-slate-300 sm:text-lg">
+          Trải nghiệm môi trường rèn luyện phản biện văn minh, khách quan và giàu tính ứng dụng thực tiễn.
+        </p>
+
+        {/* Cụm nút Đăng ký & Đăng nhập trực tiếp */}
         <div className="mt-8 flex justify-center [&>div]:justify-center">
           <AuthButtons size="lg" />
         </div>
-        <ul className="mx-auto mt-8 flex w-fit flex-col items-start gap-2 text-left text-sm text-ink-soft sm:flex-row sm:justify-center sm:gap-6">
-          <li className="flex gap-2">
-            <MapPin size={16} className="mt-0.5 shrink-0 text-brand" aria-hidden /> {COURSE_FACTS.offline}
+
+        <ul className="mx-auto mt-8 flex w-fit flex-col items-start gap-3 text-left text-sm text-slate-300 sm:flex-row sm:justify-center sm:gap-6">
+          <li className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 backdrop-blur-md">
+            <MapPin size={16} className="shrink-0 text-cyan-400" aria-hidden /> {COURSE_FACTS.offline}
           </li>
-          <li className="flex gap-2">
-            <MonitorPlay size={16} className="mt-0.5 shrink-0 text-brand" aria-hidden /> {COURSE_FACTS.online}
+          <li className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 backdrop-blur-md">
+            <MonitorPlay size={16} className="shrink-0 text-cyan-400" aria-hidden /> {COURSE_FACTS.online}
           </li>
         </ul>
       </div>
 
-      <footer className="mx-auto mt-16 flex max-w-5xl flex-col items-center justify-between gap-2 border-t border-ink/10 pt-6 text-sm text-ink-soft sm:flex-row">
+      <footer className="mx-auto mt-16 flex max-w-5xl flex-col items-center justify-between gap-3 border-t border-white/10 pt-8 text-sm text-slate-400 sm:flex-row">
         <p>© 2026 ThinkingLab</p>
         <p>
-          Phát triển bởi <span className="font-semibold text-ink">YuhnavStudio</span>
+          Phát triển bởi <span className="font-semibold text-white">YuhnavStudio</span>
         </p>
       </footer>
     </section>

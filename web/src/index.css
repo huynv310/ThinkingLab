@@ -2,6 +2,7 @@
 
 @theme {
   --font-sans: "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
 
   /* Bảng màu lấy từ logo ThinkingLab */
   --color-ink: #0b1b3f;        /* chữ chính - navy */
@@ -50,6 +51,14 @@
   -webkit-backdrop-filter: blur(22px) saturate(170%);
   border: 1px solid rgb(255 255 255 / 0.85);
   box-shadow: 0 24px 60px -24px rgb(11 27 63 / 0.3);
+}
+@utility popover-crisp {
+  background: #ffffff;
+  border: 1px solid rgb(11 27 63 / 0.12);
+  box-shadow: 0 20px 50px -12px rgb(11 27 63 / 0.28);
+}
+@utility font-display {
+  font-family: var(--font-display);
 }
 @utility btn {
   @apply inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-full px-6 font-semibold whitespace-nowrap
@@ -137,3 +146,51 @@ html.lenis, html.lenis body { height: auto; }
     transform: translateY(-4px) scale(0.96);
   }
 }
+
+/* Storytelling Dark Universe Theme Utilities */
+@utility story-dark {
+  background: radial-gradient(ellipse 90% 70% at 50% -10%, rgba(59, 130, 246, 0.18), transparent 70%),
+              radial-gradient(ellipse 70% 60% at 95% 35%, rgba(244, 63, 94, 0.12), transparent 70%),
+              radial-gradient(ellipse 70% 60% at 5% 75%, rgba(14, 165, 233, 0.14), transparent 70%),
+              #070a13;
+  color: #f8fafc;
+}
+
+@utility story-glass {
+  background: rgba(15, 23, 42, 0.68);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+@utility story-glass-strong {
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+@utility story-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@utility text-glow-cyan {
+  text-shadow: 0 0 28px rgba(34, 211, 238, 0.55);
+}
+
+@utility text-glow-rose {
+  text-shadow: 0 0 28px rgba(251, 113, 133, 0.55);
+}
+

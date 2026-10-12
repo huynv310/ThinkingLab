@@ -1,5 +1,6 @@
 import { ChevronRight, MapPin, MonitorPlay, RotateCcw } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { ArenaGamification } from '../../components/ArenaGamification'
 import { COURSE_FACTS, type SessionFormat } from '../../data/course'
 import { useSessions } from '../../lib/course'
 
@@ -16,6 +17,11 @@ export default function CoursesPage() {
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-8 sm:py-12">
       <h1 className="text-3xl font-extrabold sm:text-4xl">Tài liệu khóa học</h1>
       <p className="mt-2 text-ink-soft">{COURSE_FACTS.period} · 6 buổi × 60 phút · 2 buổi trực tiếp, 4 buổi online</p>
+
+      {/* Gamification widget: Chỉ số phản biện ARE & Huy hiệu */}
+      <div className="mt-8">
+        <ArenaGamification />
+      </div>
 
       {error && <p role="alert" className="glass mt-8 rounded-3xl p-6 text-flame-deep">Không tải được danh sách buổi học: {error}</p>}
       {!sessions && !error && <p className="mt-8 text-ink-soft" aria-live="polite">Đang tải buổi học…</p>}
@@ -36,7 +42,7 @@ export default function CoursesPage() {
                     <Icon size={14} aria-hidden /> {s.format} · {s.duration}
                   </span>
                 </div>
-                <h2 className="mt-3 text-xl leading-snug font-bold">{s.title}</h2>
+                <h2 className="mt-3 text-xl leading-snug font-bold text-ink">{s.title}</h2>
                 <p className="mt-2 line-clamp-2 text-ink-soft">{s.goals[0]}</p>
                 <span className="mt-auto inline-flex items-center gap-1 pt-5 font-semibold text-brand">
                   Xem video & tài liệu

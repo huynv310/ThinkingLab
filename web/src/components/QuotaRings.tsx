@@ -163,7 +163,7 @@ export function QuotaRings({
           id={panelId}
           role="dialog"
           aria-label="Chi tiết hạn mức"
-          className="glass-strong absolute bg-white/95! border-ink/10! top-full right-0 z-30 mt-2 w-[min(20rem,calc(100vw-1.5rem))] origin-top-right rounded-2xl p-4 shadow-xl motion-safe:animate-[quota-pop_160ms_ease-out]"
+          className="popover-crisp bg-white absolute top-full right-0 z-30 mt-2 w-[min(20rem,calc(100vw-1.5rem))] origin-top-right rounded-2xl p-4 motion-safe:animate-[quota-pop_160ms_ease-out]"
           data-testid="quota-panel"
         >
           <div className="flex items-center justify-between">
