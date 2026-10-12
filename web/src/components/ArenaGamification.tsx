@@ -209,7 +209,7 @@ export function ArenaGamification() {
             {/* Chi tiết huy hiệu mở ra khi bấm vào icon */}
             {selectedBadge && (
               <div
-                className="mt-3 story-glass rounded-2xl border border-cyan-500/40 bg-slate-900/90 p-3.5 shadow-[0_10px_30px_rgba(0,0,0,0.5)] transition-all animate-in fade-in duration-200"
+                className="mt-3 story-glass rounded-2xl border border-cyan-500/40 bg-slate-900/65 backdrop-blur-xl p-3.5 shadow-[0_10px_30px_rgba(0,0,0,0.5)] transition-all animate-in fade-in duration-200"
                 role="region"
                 aria-label={`Chi tiết huy hiệu ${selectedBadge.title}`}
               >

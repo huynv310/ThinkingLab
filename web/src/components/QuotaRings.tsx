@@ -11,18 +11,18 @@ type Tone = 'teal' | 'brand'
 
 // Màu cung tròn theo mức; cảnh báo dùng chung amber/flame để người dùng nhận ra ngay
 const ARC: Record<Tone, Record<QuotaLevel, string>> = {
-  teal: { ok: 'stroke-teal', low: 'stroke-amber', critical: 'stroke-flame', empty: 'stroke-ink/20' },
-  brand: { ok: 'stroke-brand', low: 'stroke-amber', critical: 'stroke-flame', empty: 'stroke-ink/20' },
+  teal: { ok: 'stroke-cyan-400', low: 'stroke-amber-400', critical: 'stroke-rose-500', empty: 'stroke-white/20' },
+  brand: { ok: 'stroke-blue-400', low: 'stroke-amber-400', critical: 'stroke-rose-500', empty: 'stroke-white/20' },
 }
 const BAR: Record<Tone, Record<QuotaLevel, string>> = {
-  teal: { ok: 'bg-teal', low: 'bg-amber', critical: 'bg-flame', empty: 'bg-ink/20' },
-  brand: { ok: 'bg-brand', low: 'bg-amber', critical: 'bg-flame', empty: 'bg-ink/20' },
+  teal: { ok: 'bg-cyan-400', low: 'bg-amber-400', critical: 'bg-rose-500', empty: 'bg-white/20' },
+  brand: { ok: 'bg-blue-500', low: 'bg-amber-400', critical: 'bg-rose-500', empty: 'bg-white/20' },
 }
 const LEVEL_TEXT: Record<QuotaLevel, string> = {
-  ok: 'text-ink-soft',
-  low: 'text-flame-deep',
-  critical: 'text-flame-deep',
-  empty: 'text-flame-deep',
+  ok: 'text-cyan-300 font-bold',
+  low: 'text-amber-400 font-bold',
+  critical: 'text-rose-400 font-bold',
+  empty: 'text-rose-400 font-bold',
 }
 
 const SIZE = 40
@@ -34,7 +34,7 @@ function Ring({ status, tone, icon }: { status: QuotaStatus; tone: Tone; icon: R
   return (
     <span className="relative grid shrink-0 place-items-center" style={{ width: SIZE, height: SIZE }}>
       <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} className="-rotate-90" aria-hidden>
-        <circle cx={SIZE / 2} cy={SIZE / 2} r={R} fill="none" strokeWidth={STROKE} className="stroke-ink/10" />
+        <circle cx={SIZE / 2} cy={SIZE / 2} r={R} fill="none" strokeWidth={STROKE} className="stroke-white/15" />
         <circle
           cx={SIZE / 2}
           cy={SIZE / 2}
@@ -47,7 +47,7 @@ function Ring({ status, tone, icon }: { status: QuotaStatus; tone: Tone; icon: R
           className={`${ARC[tone][status.level]} motion-safe:transition-[stroke-dashoffset] motion-safe:duration-700 motion-safe:ease-out`}
         />
       </svg>
-      <span className="absolute inset-0 grid place-items-center text-xs leading-none font-extrabold tabular-nums text-ink">
+      <span className="absolute inset-0 grid place-items-center text-xs leading-none font-black tabular-nums text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">
         {status.level === 'empty' ? icon : status.percentLeft}
       </span>
     </span>
@@ -71,14 +71,14 @@ function Row({
   return (
     <div>
       <div className="flex items-center justify-between gap-3">
-        <span className="flex min-w-0 items-center gap-2 font-semibold whitespace-nowrap">
-          {icon}
+        <span className="flex min-w-0 items-center gap-2 font-semibold text-slate-200 whitespace-nowrap text-sm">
+          <span className={tone === 'teal' ? 'text-cyan-400' : 'text-blue-400'}>{icon}</span>
           {title}
         </span>
-        <span className={`text-sm font-bold whitespace-nowrap ${LEVEL_TEXT[status.level]}`}>{headline}</span>
+        <span className={`text-sm whitespace-nowrap ${LEVEL_TEXT[status.level]}`}>{headline}</span>
       </div>
       <div
-        className="mt-2 h-2.5 overflow-hidden rounded-full bg-ink/10"
+        className="mt-2 h-2.5 overflow-hidden rounded-full bg-white/10"
         role="progressbar"
         aria-label={`${title}: phần còn lại`}
         aria-valuemin={0}
@@ -91,7 +91,7 @@ function Row({
           style={{ width: `${status.remaining * 100}%` }}
         />
       </div>
-      <p className="mt-1.5 flex justify-between gap-2 text-xs text-ink-soft">
+      <p className="mt-1.5 flex justify-between gap-2 text-xs text-slate-400">
         <span className="tabular-nums">
           {formatTokens(status.used)} / {formatTokens(status.limit)} token
         </span>
@@ -151,7 +151,7 @@ export function QuotaRings({
         aria-controls={panelId}
         aria-label={`Hạn mức trò chuyện: cuộc này còn ${chat.percentLeft}%, hôm nay còn ${daily.percentLeft}%. Bấm để xem chi tiết`}
         title="Hạn mức trò chuyện"
-        className="flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full p-1 transition-colors hover:bg-white/70 aria-expanded:bg-white/80 aria-expanded:shadow-sm"
+        className="flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full p-1.5 transition-all hover:bg-white/10 aria-expanded:bg-white/15 aria-expanded:shadow-[0_0_15px_rgba(34,211,238,0.2)]"
         data-testid="quota-button"
       >
         <Ring status={chat} tone="teal" icon={chatIcon} />
@@ -163,18 +163,18 @@ export function QuotaRings({
           id={panelId}
           role="dialog"
           aria-label="Chi tiết hạn mức"
-          className="popover-crisp bg-white absolute top-full right-0 z-30 mt-2 w-[min(20rem,calc(100vw-1.5rem))] origin-top-right rounded-2xl p-4 motion-safe:animate-[quota-pop_160ms_ease-out]"
+          className="story-glass-strong bg-slate-900/80 absolute top-full right-0 z-40 mt-2 w-[min(20rem,calc(100vw-1.5rem))] origin-top-right rounded-2xl p-4 border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.7)] backdrop-blur-2xl text-white motion-safe:animate-[quota-pop_160ms_ease-out]"
           data-testid="quota-panel"
         >
           <div className="flex items-center justify-between">
-            <h3 className="font-extrabold">Hạn mức trò chuyện</h3>
+            <h3 className="font-extrabold text-white">Hạn mức trò chuyện</h3>
             <button
               type="button"
               onClick={() => {
                 setOpen(false)
                 buttonRef.current?.focus()
               }}
-              className="-mr-3 -my-1 grid size-11 cursor-pointer place-items-center rounded-full hover:bg-ink/5"
+              className="-mr-3 -my-2 grid size-11 cursor-pointer place-items-center rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
               aria-label="Đóng chi tiết hạn mức"
             >
               <X size={16} aria-hidden />
@@ -184,7 +184,7 @@ export function QuotaRings({
             <Row status={chat} tone="teal" icon={chatIcon} title="Cuộc trò chuyện này" note="Mở cuộc mới để làm mới" />
             <Row status={daily} tone="brand" icon={dailyIcon} title="Hôm nay" note="Làm mới lúc 0h" />
           </div>
-          <p className="mt-4 border-t border-ink/10 pt-3 text-xs text-ink-soft">
+          <p className="mt-4 border-t border-white/10 pt-3 text-xs text-slate-400">
             Mỗi lượt khoảng 750 token. Tin nhắn bị chặn hoặc trả lời dự phòng không bị tính.
           </p>
         </div>
