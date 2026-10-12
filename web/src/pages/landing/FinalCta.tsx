@@ -1,7 +1,7 @@
 import { useGSAP } from '@gsap/react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { MapPin, MonitorPlay, Sparkles } from 'lucide-react'
+import { MapPin, MonitorPlay } from 'lucide-react'
 import { useRef } from 'react'
 import logo from '../../assets/logo.webp'
 import { AuthButtons } from '../../components/AuthButtons'
@@ -36,12 +36,7 @@ export function FinalCta() {
       <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 size-96 rounded-full bg-gradient-to-tr from-cyan-500/20 via-indigo-500/15 to-rose-500/20 blur-3xl" aria-hidden />
 
       <div className="cta-panel story-glass-strong relative mx-auto max-w-5xl overflow-hidden rounded-[2.5rem] border border-white/15 px-6 py-14 text-center sm:px-12 sm:py-20 shadow-[0_30px_80px_rgba(0,0,0,0.8)]">
-        <div className="inline-flex items-center gap-2 rounded-full border border-rose-500/30 bg-rose-500/10 px-3.5 py-1 text-xs font-bold tracking-widest text-rose-300 uppercase backdrop-blur-md">
-          <Sparkles size={14} className="text-rose-400" />
-          Chương V // Khai Phóng Tiềm Năng
-        </div>
-
-        <div className="relative mx-auto mt-6 size-20">
+        <div className="relative mx-auto size-20">
           <div className="absolute -inset-2 rounded-full bg-cyan-400/30 blur-lg animate-pulse" />
           <img src={logo} alt="" width={80} height={80} className="relative mx-auto size-20 object-contain drop-shadow-[0_0_20px_rgba(34,211,238,0.5)]" />
         </div>

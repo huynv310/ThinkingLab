@@ -9,6 +9,9 @@ import { lazy, StrictMode, Suspense, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './lib/auth'
+import { initInteractionSound } from './lib/sound'
+
+initInteractionSound()
 
 // Tách chunk: landing (GSAP + Lenis) và dashboard không tải lẫn nhau
 const AdminPage = lazy(() => import('./pages/dashboard/AdminPage'))

@@ -65,10 +65,25 @@ test('ArenaGamification: khi có tin nhắn thực tế, hiển thị điểm th
   await expect(arena).toContainText('Lý lẽ đa chiều')
   await expect(arena).toContainText('Dẫn chứng có căn cứ')
 
-  // Huy hiệu: CHỈ hiển thị Khắc tinh Ad Hominem (đã đạt), KHÔNG hiển thị các huy hiệu chưa đạt
-  await expect(arena.getByText('Khắc tinh Ad Hominem')).toBeVisible()
-  await expect(arena.getByText('Thợ săn Chi phí chìm')).toHaveCount(0)
-  await expect(arena.getByText('Vượt bẫy Thiên kiến')).toHaveCount(0)
+  // Huy hiệu: hiển thị dưới dạng icon, bấm vào thì hiển thị thông tin chi tiết
+  const badgeBtn = arena.getByRole('button', { name: /Khắc tinh Ad Hominem/ })
+  await expect(badgeBtn).toBeVisible()
+
+  // Chưa bấm: các huy hiệu khác không đạt tuyệt đối không được hiện
+  await expect(arena.getByRole('button', { name: /Thợ săn Chi phí chìm/ })).toHaveCount(0)
+  await expect(arena.getByRole('button', { name: /Vượt bẫy Thiên kiến/ })).toHaveCount(0)
+
+  // Bấm vào icon huy hiệu để mở chi tiết
+  await badgeBtn.click()
+  const detail = arena.getByRole('region', { name: /Chi tiết huy hiệu/ })
+  await expect(detail).toBeVisible()
+  await expect(detail).toContainText('Khắc tinh Ad Hominem')
+  await expect(detail).toContainText('Bẻ gãy công kích cá nhân, bảo vệ luận điểm thép')
+  await expect(detail).toContainText('Đã mở')
+
+  // Bấm nút đóng chi tiết
+  await detail.getByRole('button', { name: 'Đóng chi tiết huy hiệu' }).click()
+  await expect(detail).toHaveCount(0)
 })
 
 test('Sidebar desktop: auto-collapse mặc định (w-20), rê chuột vào bung ra (w-72), rời chuột thu nhỏ lại', async ({ page }) => {

@@ -1,4 +1,4 @@
-import { CheckCircle2, Flame, HelpCircle, ShieldAlert, Sparkles, Swords } from 'lucide-react'
+import { CheckCircle2, Flame, HelpCircle, ShieldAlert, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import logo from '../../assets/logo.webp'
 import { sound } from '../../lib/sound'
@@ -82,11 +82,7 @@ export function SparringDemo() {
     >
       <div className="mx-auto max-w-5xl">
         <div className="text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3.5 py-1 text-xs font-bold tracking-widest text-indigo-300 uppercase backdrop-blur-md">
-            <Swords size={14} className="text-indigo-400" />
-            Chương III // Đấu Trường Thử Thách
-          </div>
-          <h2 id="sparring-demo-title" className="font-display mt-4 text-3xl font-extrabold tracking-tight sm:text-5xl text-white">
+          <h2 id="sparring-demo-title" className="font-display text-3xl font-extrabold tracking-tight sm:text-5xl text-white">
             Đấu trường phản biện: <span className="text-cyan-400 text-glow-cyan">Bạn sẽ đáp lại thế nào?</span>
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-300">

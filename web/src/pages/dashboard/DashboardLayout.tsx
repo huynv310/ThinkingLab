@@ -1,7 +1,8 @@
-import { BookOpen, ChevronLeft, ChevronRight, LogOut, MessageCircleHeart, ShieldCheck } from 'lucide-react'
+import { BookOpen, LogOut, MessageCircleHeart, ShieldCheck } from 'lucide-react'
 import { useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { Logo } from '../../components/Logo'
+import { NeuralCanvas } from '../../components/NeuralCanvas'
 import { displayName, useAuth } from '../../lib/auth'
 import { useIsAdmin } from '../../lib/course'
 import { supabase } from '../../lib/supabase'
@@ -19,8 +20,7 @@ export default function DashboardLayout() {
   const { isAdmin } = useIsAdmin()
   const nav = isAdmin ? [...NAV, ADMIN_NAV] : NAV
   const [isHovered, setIsHovered] = useState(false)
-  const [isPinned, setIsPinned] = useState(false)
-  const isExpanded = isPinned || isHovered
+  const isExpanded = isHovered
 
   async function logout() {
     await supabase.auth.signOut()
@@ -36,6 +36,9 @@ export default function DashboardLayout() {
 
   return (
     <div className="story-dark min-h-dvh text-slate-100 flex flex-col lg:flex-row relative">
+      {/* 2D Canvas Neural Nodes background đồng bộ với landing page */}
+      <NeuralCanvas />
+
       {/* Sidebar desktop auto-collapse: thu gọn mặc định, di chuột vào tự bung mở */}
       <aside
         onMouseEnter={() => setIsHovered(true)}
@@ -44,21 +47,12 @@ export default function DashboardLayout() {
           isExpanded ? 'w-72 shadow-[0_0_50px_rgba(0,0,0,0.6)]' : 'w-20'
         }`}
       >
-        <div className={`flex items-center ${isExpanded ? 'justify-between' : 'flex-col gap-3 justify-center'}`}>
+        <div className={`flex items-center transition-all duration-300 ${isExpanded ? 'justify-start px-1' : 'justify-center'}`}>
           {isExpanded ? (
             <Logo to="/" />
           ) : (
             <Logo to="/" size={36} withText={false} />
           )}
-          <button
-            type="button"
-            onClick={() => setIsPinned((p) => !p)}
-            className="grid size-11 place-items-center rounded-xl text-slate-400 transition-colors hover:bg-white/10 hover:text-white cursor-pointer shrink-0"
-            aria-label={isPinned ? 'Bỏ ghim menu' : 'Ghim menu (luôn mở)'}
-            title={isPinned ? 'Bỏ ghim menu (tự động thu nhỏ khi rê chuột ra)' : 'Ghim menu (luôn mở rộng)'}
-          >
-            {isPinned ? <ChevronLeft size={18} aria-hidden /> : <ChevronRight size={18} aria-hidden />}
-          </button>
         </div>
 
         <nav aria-label="Dashboard" className="flex flex-col gap-2">

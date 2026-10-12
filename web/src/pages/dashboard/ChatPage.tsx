@@ -17,6 +17,7 @@ import {
   type ChatMessage,
   type Conversation,
 } from '../../lib/api'
+import { sound } from '../../lib/sound'
 
 const MAX_CHARS = 2000 // khớp MAX_CONTENT_CHARS ở api/chat.py
 const MIN_TYPING_MS = 700 // để "đang soạn tin" kịp hiện, cảm giác như bạn bè đang gõ
@@ -193,6 +194,15 @@ function Thread({
       .catch(() => setError('Không tải được tin nhắn.'))
   }, [conversationId])
 
+  useEffect(() => {
+    if (typing) {
+      sound.startTyping()
+    } else {
+      sound.stopTyping()
+    }
+    return () => sound.stopTyping()
+  }, [typing])
+
   useLayoutEffect(() => {
     const el = scrollRef.current
     if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
@@ -218,11 +228,14 @@ function Thread({
     setTyping(true)
     try {
       const [res] = await Promise.all([sendReply(conversationId, content), wait(MIN_TYPING_MS)])
+      sound.stopTyping()
+      sound.playPop()
       setMessages((m) => [...(m ?? []).filter((x) => x.id !== temp.id), ...res.messages])
       setUsedTokens(res.usage.used)
       onUsage(res.usage.daily_used)
       onSent()
     } catch (err) {
+      sound.stopTyping()
       setMessages((m) => (m ?? []).filter((x) => x.id !== temp.id))
       setDraft(content)
       if (err instanceof ChatApiError && err.code === 'budget_exhausted') setUsedTokens(TOKEN_LIMIT)

@@ -1,10 +1,11 @@
-import { MessageSquareText, RotateCw, Sparkles, Trophy } from 'lucide-react'
+import { MessageSquareText, RotateCw, Sparkles, Trophy, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { fetchUserArenaData, type ArenaMetricsResult } from '../lib/arena'
+import { fetchUserArenaData, type ArenaMetricsResult, type UnlockedBadge } from '../lib/arena'
 
 export function ArenaGamification() {
   const [data, setData] = useState<ArenaMetricsResult | null>(null)
+  const [selectedBadge, setSelectedBadge] = useState<UnlockedBadge | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -177,26 +178,71 @@ export function ArenaGamification() {
         </div>
 
         {data.badges.length > 0 ? (
-          <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
-            {data.badges.map((b) => {
-              const Icon = b.icon
-              return (
-                <div
-                  key={b.id}
-                  title={b.desc}
-                  className="story-glass border border-cyan-500/30 bg-slate-900/60 shadow-[0_0_15px_rgba(34,211,238,0.15)] flex flex-col items-center rounded-2xl p-3 text-center transition-transform hover:scale-102"
-                >
-                  <span className="grid size-9 place-items-center rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-                    <Icon size={18} aria-hidden />
-                  </span>
-                  <span className="mt-2 text-xs font-bold text-slate-100">{b.title}</span>
-                  <span className="mt-1 text-[11px] text-slate-400 line-clamp-2 leading-relaxed">{b.desc}</span>
-                  <span className="mt-2 text-[11px] font-semibold text-emerald-400">
-                    ✓ Đã mở
-                  </span>
+          <div>
+            <div className="mt-3 flex flex-wrap items-center gap-2.5">
+              {data.badges.map((b) => {
+                const Icon = b.icon
+                const isSelected = selectedBadge?.id === b.id
+                return (
+                  <button
+                    key={b.id}
+                    type="button"
+                    onClick={() => setSelectedBadge(isSelected ? null : b)}
+                    className={`group relative grid size-11 place-items-center rounded-2xl transition-all duration-200 cursor-pointer ${
+                      isSelected
+                        ? 'border-2 border-cyan-400 bg-cyan-500/25 text-cyan-300 shadow-[0_0_20px_rgba(34,211,238,0.5)] scale-105'
+                        : 'border border-cyan-500/30 bg-slate-900/60 text-cyan-400/90 hover:border-cyan-400/70 hover:bg-cyan-500/15 hover:text-cyan-300 hover:scale-105 shadow-[0_0_12px_rgba(34,211,238,0.12)]'
+                    }`}
+                    aria-label={`Huy hiệu ${b.title}`}
+                    aria-expanded={isSelected}
+                    title={`${b.title} (Bấm để xem chi tiết)`}
+                  >
+                    <Icon size={20} aria-hidden className="transition-transform group-hover:scale-110" />
+                    {isSelected && (
+                      <span className="absolute -top-1 -right-1 size-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee]" />
+                    )}
+                  </button>
+                )
+              })}
+              <span className="text-[11px] text-slate-400 italic">
+                (Bấm icon để xem chi tiết)
+              </span>
+            </div>
+
+            {/* Chi tiết huy hiệu mở ra khi bấm vào icon */}
+            {selectedBadge && (
+              <div
+                className="mt-3 story-glass rounded-2xl border border-cyan-500/40 bg-slate-900/90 p-3.5 shadow-[0_10px_30px_rgba(0,0,0,0.5)] transition-all animate-in fade-in duration-200"
+                role="region"
+                aria-label={`Chi tiết huy hiệu ${selectedBadge.title}`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <span className="grid size-10 place-items-center rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 shrink-0 shadow-[0_0_15px_rgba(34,211,238,0.25)]">
+                      <selectedBadge.icon size={20} aria-hidden />
+                    </span>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-bold text-white text-sm">{selectedBadge.title}</h4>
+                        <span className="inline-flex items-center rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
+                          ✓ Đã mở
+                        </span>
+                      </div>
+                      <p className="mt-0.5 text-xs text-slate-300 leading-relaxed">{selectedBadge.desc}</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedBadge(null)}
+                    className="grid size-7 place-items-center rounded-lg text-slate-400 hover:bg-white/10 hover:text-white transition-colors cursor-pointer shrink-0"
+                    aria-label="Đóng chi tiết huy hiệu"
+                    title="Đóng"
+                  >
+                    <X size={15} />
+                  </button>
                 </div>
-              )
-            })}
+              </div>
+            )}
           </div>
         ) : (
           <div className="mt-3 rounded-2xl border border-white/5 bg-white/[0.02] p-3 text-center text-xs text-slate-400">

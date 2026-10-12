@@ -1,7 +1,7 @@
 import { useGSAP } from '@gsap/react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { AlertOctagon, ArrowRight, TrendingUp } from 'lucide-react'
+import { ArrowRight, TrendingUp } from 'lucide-react'
 import { useRef } from 'react'
 import { SURVEY_STATS } from '../../data/course'
 import { paginate, type TourStops } from '../../lib/idleAutoScroll'
@@ -93,11 +93,7 @@ export function Story() {
       >
         {/* Mở đầu */}
         <div className="flex shrink-0 flex-col justify-center lg:w-[38vw]">
-          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-rose-500/30 bg-rose-500/10 px-3.5 py-1 text-xs font-bold tracking-widest text-rose-300 uppercase backdrop-blur-md">
-            <AlertOctagon size={14} className="text-rose-400" />
-            Chương II // Thực Tại: Bão Tin Đồn
-          </div>
-          <h2 id="story-title" className="font-display mt-4 text-4xl leading-tight font-extrabold sm:text-5xl text-white">
+          <h2 id="story-title" className="font-display text-4xl leading-tight font-extrabold sm:text-5xl text-white">
             Sinh viên năm nhất đang <span className="text-rose-400 text-glow-rose">kẹt</span> ở đâu?
           </h2>
           <p className="mt-4 text-lg text-slate-300">

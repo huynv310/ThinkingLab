@@ -1,7 +1,7 @@
 import { useGSAP } from '@gsap/react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { Compass, Layers, Mic, Scale, Search, ShieldAlert, Swords } from 'lucide-react'
+import { Compass, Mic, Scale, Search, ShieldAlert, Swords } from 'lucide-react'
 import { useRef } from 'react'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -80,11 +80,7 @@ export function Activities() {
     <section data-tour-stop id="lo-trinh" ref={root} aria-labelledby="roadmap-title" className="relative px-4 py-24 sm:py-32">
       <div className="mx-auto max-w-6xl">
         <div className="reveal max-w-3xl">
-          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-1 text-xs font-bold tracking-widest text-cyan-300 uppercase backdrop-blur-md">
-            <Layers size={14} className="text-cyan-400" />
-            Chương IV // Lục Đại Trụ Cột Tri Thức
-          </div>
-          <h2 id="roadmap-title" className="font-display mt-4 text-4xl leading-tight font-extrabold sm:text-5xl text-white">
+          <h2 id="roadmap-title" className="font-display text-4xl leading-tight font-extrabold sm:text-5xl text-white">
             6 buổi, luyện bằng <span className="text-cyan-400 text-glow-cyan">tình huống thật</span>
           </h2>
           <p className="mt-4 text-lg text-slate-300">

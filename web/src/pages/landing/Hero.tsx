@@ -28,7 +28,6 @@ export function Hero() {
         const split = SplitText.create('.hero-line', { type: 'words' })
         const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
         tl.from('.hero-logo-container', { scale: 0.75, rotate: -8, autoAlpha: 0, duration: 0.7 })
-          .from('.hero-eyebrow', { y: 20, autoAlpha: 0, duration: 0.5 }, '-=0.4')
           .from(split.words, { yPercent: 80, rotateX: -45, autoAlpha: 0, stagger: 0.05, duration: 0.7 }, '-=0.3')
           .from('.hero-fade', { y: 20, autoAlpha: 0, stagger: 0.09, duration: 0.6 }, '-=0.3')
 
@@ -72,19 +71,10 @@ export function Hero() {
     >
       <div className="hero-content relative z-10 mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.3fr_1fr]">
         <div>
-          {/* Chapter Eyebrow Tag */}
-          <div className="hero-eyebrow inline-flex items-center gap-2.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-1.5 text-xs font-bold tracking-widest text-cyan-300 uppercase backdrop-blur-md">
-            <span className="relative flex size-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-400 opacity-75" />
-              <span className="relative inline-flex size-2 rounded-full bg-cyan-400" />
-            </span>
-            Chương I // Sự Thức Tỉnh
-          </div>
-
           {/* Slogan */}
           <h1
             id="hero-title"
-            className="font-display mt-6 text-4xl leading-[1.08] font-extrabold tracking-tight sm:text-6xl xl:text-7xl [perspective:600px]"
+            className="font-display text-4xl leading-[1.08] font-extrabold tracking-tight sm:text-6xl xl:text-7xl [perspective:600px]"
           >
             {SLOGAN.map((s) => (
               <span key={s.text} className={`hero-line block pb-1 ${s.className}`}>
