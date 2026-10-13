@@ -13,7 +13,7 @@ export function AuthButtons({ size = 'md' }: { size?: 'md' | 'lg' }) {
     return (
       <Link
         to="/dashboard"
-        className={`inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-brand px-6 font-semibold text-white shadow-[0_0_20px_rgba(34,211,238,0.35)] transition-all hover:brightness-110 active:scale-95 ${big}`}
+        className={`inline-flex min-h-11 cursor-pointer items-center justify-center gap-1.5 sm:gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-brand px-4 sm:px-6 text-sm sm:text-base font-semibold text-white shadow-[0_0_20px_rgba(34,211,238,0.35)] transition-all hover:brightness-110 active:scale-95 ${big}`}
       >
         <LayoutDashboard size={18} aria-hidden /> Vào Dashboard
       </Link>
