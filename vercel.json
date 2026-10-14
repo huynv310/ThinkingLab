@@ -4,6 +4,7 @@
   "installCommand": "npm --prefix web ci",
   "buildCommand": "npm --prefix web run build",
   "outputDirectory": "web/dist",
+  "regions": ["sin1"],
   "functions": {
     "api/chat.py": {
       "maxDuration": 30,

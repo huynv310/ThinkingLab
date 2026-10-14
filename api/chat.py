@@ -16,6 +16,8 @@ import os
 import random
 import re
 import sys
+import threading
+import time
 import uuid
 from datetime import datetime, timedelta, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -55,6 +57,77 @@ LOCAL_MEMES = {
 MESSAGE_FIELDS = ("id", "conversation_id", "sender_type", "content", "fallacy_code", "meme_url", "created_at")
 
 
+# Quản lý khóa đồng thời theo user (triệt tiêu TOCTOU race condition) và Rate Limiting
+_active_users = set()
+_active_lock = threading.Lock()
+_user_timestamps = {}
+_rate_lock = threading.Lock()
+
+RATE_LIMIT_WINDOW = 60.0  # Cửa sổ trượt 60 giây
+RATE_LIMIT_MAX_PER_MINUTE = 30  # Tối đa 30 requests/phút/user
+RATE_LIMIT_MIN_INTERVAL = float(os.environ.get("RATE_LIMIT_MIN_INTERVAL", "0.8"))
+
+
+def reset_rate_limits():
+    """Dùng để xóa sạch state trong test suite hoặc khi bảo trì."""
+    with _rate_lock:
+        _user_timestamps.clear()
+    with _active_lock:
+        _active_users.clear()
+
+
+def _is_rate_limit_enabled():
+    return os.environ.get("RATE_LIMIT_ENABLED", "true").lower() in ("true", "1", "yes")
+
+
+def _check_rate_limit(user_id):
+    if not _is_rate_limit_enabled():
+        return
+    now = time.monotonic()
+    min_interval = float(os.environ.get("RATE_LIMIT_MIN_INTERVAL", str(RATE_LIMIT_MIN_INTERVAL)))
+    with _rate_lock:
+        history = _user_timestamps.get(user_id, [])
+        history = [t for t in history if now - t < RATE_LIMIT_WINDOW]
+
+        if history and min_interval > 0 and (now - history[-1]) < min_interval:
+            raise _HttpError(
+                429,
+                "Bạn gửi tin nhắn hơi nhanh rồi 😄 Chờ một chút nhé!",
+                code="rate_limited",
+            )
+
+        if len(history) >= RATE_LIMIT_MAX_PER_MINUTE:
+            raise _HttpError(
+                429,
+                "Bạn đã gửi quá nhiều tin nhắn trong 1 phút. Hãy chậm lại một chút nhé!",
+                code="rate_limited",
+            )
+
+        history.append(now)
+        _user_timestamps[user_id] = history
+
+
+class _UserGuard:
+    """Khóa đồng thời theo user_id: chặn đứng việc spam đồng thời nhiều request để lách hạn mức (TOCTOU)."""
+    def __init__(self, user_id):
+        self.user_id = user_id
+
+    def __enter__(self):
+        with _active_lock:
+            if self.user_id in _active_users:
+                raise _HttpError(
+                    429,
+                    "Bạn đang có một câu hỏi đang được xử lý. Vui lòng đợi trong giây lát!",
+                    code="request_in_progress",
+                )
+            _active_users.add(self.user_id)
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        with _active_lock:
+            _active_users.discard(self.user_id)
+
+
 class _HttpError(Exception):
     def __init__(self, status, message, code=None):
         super().__init__(message)
@@ -68,11 +141,15 @@ def handle(payload, auth_header, client):
         if not isinstance(payload, dict):
             raise _HttpError(400, "Body phải là JSON object")
         action = payload.get("action")
-        if action == "start":
-            return 200, _start(client, user_id, payload.get("topic"), payload.get("custom_topic"))
-        if action == "reply":
-            return 200, _reply(client, user_id, payload.get("conversation_id"), payload.get("content"))
-        raise _HttpError(400, "action không hợp lệ")
+        if action not in ("start", "reply"):
+            raise _HttpError(400, "action không hợp lệ")
+
+        _check_rate_limit(user_id)
+        with _UserGuard(user_id):
+            if action == "start":
+                return 200, _start(client, user_id, payload.get("topic"), payload.get("custom_topic"))
+            if action == "reply":
+                return 200, _reply(client, user_id, payload.get("conversation_id"), payload.get("content"))
     except _HttpError as e:
         body = {"error": e.message}
         if e.code:
@@ -104,7 +181,11 @@ def _start(client, user_id, topic, custom_topic=None):
         row, opening = {"user_id": user_id, "topic": topic}, opening_message(topic)
     else:
         raise _HttpError(400, "Chủ đề không hợp lệ")
-    conversation = client.table("conversations").insert(row).execute().data[0]
+    res = client.table("conversations").insert(row).execute()
+    data = getattr(res, "data", None) or []
+    if not data:
+        raise _HttpError(500, "Không thể khởi tạo cuộc hội thoại")
+    conversation = data[0]
     bot = _insert_message(client, conversation["id"], "BOT", opening)
     return {"conversation": conversation, "messages": [bot], "usage": _usage(row.get("token_count", 0), daily)}
 
@@ -248,11 +329,12 @@ def _pick_meme(ai, recent, user_text=""):
 
 def _recent_messages(client, conversation_id):
     """MEME_LOOKBACK tin gần nhất (cũ -> mới): đủ để tránh lặp meme; AI chỉ nhận HISTORY_LIMIT tin cuối."""
-    rows = (
+    res = (
         client.table("messages").select("sender_type, content, meme_url")
         .eq("conversation_id", conversation_id)
-        .order("id", desc=True).limit(MEME_LOOKBACK).execute().data
+        .order("id", desc=True).limit(MEME_LOOKBACK).execute()
     )
+    rows = getattr(res, "data", None) or []
     return list(reversed(rows))
 
 
@@ -264,7 +346,11 @@ def _insert_message(client, conversation_id, sender_type, content, fallacy_code=
         "fallacy_code": fallacy_code,
         "meme_url": meme_url,
     }
-    saved = client.table("messages").insert(row).execute().data[0]
+    res = client.table("messages").insert(row).execute()
+    data = getattr(res, "data", None) or []
+    if not data:
+        raise _HttpError(500, "Không thể lưu tin nhắn")
+    saved = data[0]
     return {k: saved.get(k) for k in MESSAGE_FIELDS}
 
 
@@ -282,7 +368,17 @@ def _get_client():
 
 class handler(BaseHTTPRequestHandler):  # tên `handler` là quy ước của Vercel
     def do_POST(self):
-        length = int(self.headers.get("Content-Length") or 0)
+        if hasattr(self, "connection") and self.connection:
+            try:
+                self.connection.settimeout(15.0)
+            except Exception:
+                pass
+        try:
+            length = int(self.headers.get("Content-Length") or 0)
+        except (ValueError, TypeError):
+            return self._send(400, {"error": "Content-Length không hợp lệ"})
+        if length < 0:
+            return self._send(400, {"error": "Content-Length không hợp lệ"})
         if length > MAX_BODY_BYTES:
             return self._send(413, {"error": "Body quá lớn"})
         try:
@@ -306,13 +402,17 @@ def _load_env_file(path):
     if not path.exists():
         return
     for line in path.read_text(encoding="utf-8").splitlines():
-        if "=" in line and not line.lstrip().startswith("#"):
+        line = line.strip()
+        if "=" in line and not line.startswith("#"):
             key, value = line.split("=", 1)
-            os.environ.setdefault(key.strip(), value.strip())
+            # Bỏ khoảng trắng và dấu ngoặc kép/đơn bao quanh nếu có
+            clean_val = value.strip().strip('"').strip("'")
+            os.environ.setdefault(key.strip(), clean_val)
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
+    _load_env_file(ROOT / ".env")
     _load_env_file(ROOT / ".env.local")
     print("ThinkingLab API dev server: http://127.0.0.1:8787/api/chat")
     ThreadingHTTPServer(("127.0.0.1", 8787), handler).serve_forever()
