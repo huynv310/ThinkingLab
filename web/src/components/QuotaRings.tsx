@@ -1,6 +1,6 @@
 import { CalendarClock, MessageCircle, X } from 'lucide-react'
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
-import { formatTokens, quotaStatus, type QuotaLevel, type QuotaStatus } from '../lib/quota'
+import { formatTokens, quotaStatus, TOKENS_PER_TURN, type QuotaLevel, type QuotaStatus } from '../lib/quota'
 
 /**
  * 2 vòng donut hiển thị hạn mức còn lại (cuộc trò chuyện + hôm nay). Bấm vào -> popover
@@ -185,7 +185,7 @@ export function QuotaRings({
             <Row status={daily} tone="brand" icon={dailyIcon} title="Hôm nay" note="Làm mới lúc 0h" />
           </div>
           <p className="mt-4 border-t border-white/10 pt-3 text-xs text-slate-400">
-            Mỗi lượt khoảng 750 token. Tin nhắn bị chặn hoặc trả lời dự phòng không bị tính.
+            Mỗi lượt khoảng ~{TOKENS_PER_TURN} token. Tin nhắn bị chặn hoặc trả lời dự phòng không bị tính.
           </p>
         </div>
       )}

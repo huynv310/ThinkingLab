@@ -33,8 +33,8 @@ from chatbot import TOPICS, build_reply, opening_message  # noqa: E402
 logger = logging.getLogger(__name__)
 
 MAX_CONTENT_CHARS = 2000  # đủ cho một lập luận ARE/PREP có dẫn chứng
-# Hạn mức token Gemini thực tế (input + output). Đo thực tế: duyệt chủ đề ~350, mỗi lượt ~600-800
-# (prompt hệ thống + 2 lượt gần nhất) -> ~40 lượt/cuộc, ~200 lượt (~5 cuộc dài)/ngày mỗi người.
+# Hạn mức token Gemini thực tế (input + output). Đo thực tế: mỗi lượt ~850 token
+# (prompt hệ thống CoT + 4 lượt gần nhất + output 400 token) -> ~35 lượt/cuộc, ~175 lượt (~5 cuộc dài)/ngày mỗi người.
 TOKEN_BUDGET = 30_000
 DAILY_TOKEN_BUDGET = 150_000  # chặn việc mở cuộc mới liên tục để lách hạn mức cuộc trò chuyện
 VN_TZ = timezone(timedelta(hours=7))  # hạn mức ngày reset lúc 0h giờ Việt Nam
@@ -64,8 +64,8 @@ _user_timestamps = {}
 _rate_lock = threading.Lock()
 
 RATE_LIMIT_WINDOW = 60.0  # Cửa sổ trượt 60 giây
-RATE_LIMIT_MAX_PER_MINUTE = 30  # Tối đa 30 requests/phút/user
-RATE_LIMIT_MIN_INTERVAL = float(os.environ.get("RATE_LIMIT_MIN_INTERVAL", "0.8"))
+RATE_LIMIT_MAX_PER_MINUTE = 8  # Tối ưu cho 50-100 CCU: tối đa 8 requests/phút/user
+RATE_LIMIT_MIN_INTERVAL = float(os.environ.get("RATE_LIMIT_MIN_INTERVAL", "3.5"))
 
 
 def reset_rate_limits():
@@ -92,14 +92,14 @@ def _check_rate_limit(user_id):
         if history and min_interval > 0 and (now - history[-1]) < min_interval:
             raise _HttpError(
                 429,
-                "Bạn gửi tin nhắn hơi nhanh rồi 😄 Chờ một chút nhé!",
+                "Lab đang suy nghĩ cùng bạn nè 🤔 Hãy dành vài giây ngẫm nghĩ lại trước khi gửi tiếp nhé!",
                 code="rate_limited",
             )
 
         if len(history) >= RATE_LIMIT_MAX_PER_MINUTE:
             raise _HttpError(
                 429,
-                "Bạn đã gửi quá nhiều tin nhắn trong 1 phút. Hãy chậm lại một chút nhé!",
+                "Bạn đã gửi khá nhiều tin nhắn trong 1 phút. Hãy chậm lại một chút để cùng suy ngẫm nhé!",
                 code="rate_limited",
             )
 

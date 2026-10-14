@@ -44,7 +44,25 @@ DAILY_COOLDOWN_BUFFER_SECONDS = 60.0
 
 _cooldown_until = {}
 _key_cooldown_until = {}
+_key_request_timestamps = {}
+_key_last_used = {}
 _lock = threading.Lock()
+
+
+def _key_recent_count(key, now, window=60.0):
+    timestamps = _key_request_timestamps.get(key, [])
+    valid = [t for t in timestamps if now - t < window]
+    _key_request_timestamps[key] = valid
+    return len(valid)
+
+
+def _record_key_use(key):
+    now = time.monotonic()
+    with _lock:
+        _key_last_used[key] = now
+        if key not in _key_request_timestamps:
+            _key_request_timestamps[key] = []
+        _key_request_timestamps[key].append(now)
 
 
 def seconds_until_daily_reset(now=None):
@@ -110,14 +128,17 @@ def api_keys():
 
 
 def api_key():
-    """Trả về 1 key sẵn sàng (không bị cooldown) nếu có (chọn ngẫu nhiên để cân bằng tải)."""
+    """Trả về 1 key sẵn sàng (không bị cooldown) với tải thấp nhất (Least-Loaded Balancing)."""
     keys = api_keys()
     if not keys:
         return ""
     now = time.monotonic()
     with _lock:
         ready = [k for k in keys if _key_cooldown_until.get(k, 0) <= now]
-    return random.choice(ready) if ready else keys[0]
+        if not ready:
+            return keys[0]
+        ready.sort(key=lambda k: (_key_recent_count(k, now), _key_last_used.get(k, 0)))
+        return ready[0]
 
 
 def key_cooldown_remaining(key):
@@ -132,6 +153,8 @@ def reset_cooldowns():
     with _lock:
         _cooldown_until.clear()
         _key_cooldown_until.clear()
+        _key_request_timestamps.clear()
+        _key_last_used.clear()
 
 
 def _candidates(tier):
@@ -183,16 +206,17 @@ def generate_json(
     now = time.monotonic()
     with _lock:
         ready_keys = [k for k in active_keys if _key_cooldown_until.get(k, 0) <= now]
-    if ready_keys:
-        first_key = random.choice(ready_keys)
-        keys_to_try = [first_key] + [k for k in ready_keys if k != first_key]
-    else:
-        keys_to_try = active_keys[:1]
+        if ready_keys:
+            ready_keys.sort(key=lambda k: (_key_recent_count(k, now), _key_last_used.get(k, 0)))
+            keys_to_try = ready_keys
+        else:
+            keys_to_try = active_keys[:1]
 
     response = None
     for model, extra in _candidates(tier):
         model_succeeded = False
         for current_key in keys_to_try:
+            _record_key_use(current_key)
             body = {
                 "systemInstruction": {"parts": [{"text": system}]},
                 "contents": contents,
@@ -231,6 +255,7 @@ def generate_json(
             break
         if model_succeeded:
             break
+        _cool_down(model)
     if response is None:
         raise RuntimeError("No Gemini model or key available")
     response.raise_for_status()

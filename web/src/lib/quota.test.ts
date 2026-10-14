@@ -3,7 +3,7 @@ import { quotaStatus } from './quota'
 
 describe('quotaStatus', () => {
   it('còn nguyên hạn mức', () => {
-    expect(quotaStatus(0, 30_000)).toMatchObject({ left: 30_000, percentLeft: 100, turnsLeft: 40, level: 'ok' })
+    expect(quotaStatus(0, 30_000)).toMatchObject({ left: 30_000, percentLeft: 100, turnsLeft: 35, level: 'ok' })
   })
 
   it('đổi mức cảnh báo theo phần còn lại', () => {

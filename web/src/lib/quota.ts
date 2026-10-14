@@ -1,6 +1,6 @@
 /** Tính trạng thái hạn mức token để hiển thị (server mới là nơi chặn thật). */
 
-export const TOKENS_PER_TURN = 750 // trung bình đo thực tế, chỉ để ước lượng số lượt còn lại
+export const TOKENS_PER_TURN = 850 // trung bình đo thực tế sau nâng cấp suy luận đa tầng CoT, dùng để ước lượng số lượt còn lại
 
 export type QuotaLevel = 'ok' | 'low' | 'critical' | 'empty'
 

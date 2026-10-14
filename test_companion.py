@@ -355,10 +355,10 @@ def test_prompt_enforces_course_method(gemini):
         assert must in system
     assert {"SUNK_COST", "CONFIRMATION_BIAS", "SLIPPERY_SLOPE"} <= set(body["generationConfig"]["responseSchema"]["properties"]["fallacy"]["enum"])
     schema = body["generationConfig"]["responseSchema"]
-    assert schema["propertyOrdering"][:2] == ["move", "fallacy"]  # chẩn đoán trước khi viết
+    assert schema["propertyOrdering"].index("fallacy") < schema["propertyOrdering"].index("reply")  # chẩn đoán trước khi viết
 
 
-@pytest.mark.parametrize("code", ["SUNK_COST", "BANDWAGON", "FALSE_DILEMMA", "HERD_MENTALITY"])
+@pytest.mark.parametrize("code", ["SUNK_COST", "BANDWAGON", "FALSE_DILEMMA", "HERD_MENTALITY", "OVERCONFIDENCE_BIAS", "INGROUP_BIAS"])
 def test_course_flaws_are_accepted(gemini, code):
     gemini["resp"] = _Resp({"move": "FLAW", "reply": "ok", "fallacy": code, "meme": ""})
     assert companion.generate_reply("dam-dong", HISTORY, "x").fallacy_code == code

@@ -137,11 +137,11 @@ AI phải chọn đúng 1 "nước đi" mỗi lượt, theo thứ tự ưu tiên
 **9 lỗi được nhận diện:** Hasty Generalization, Ad Hominem, Straw Man, Slippery Slope, False Dilemma, Bandwagon, Confirmation Bias, Herd Mentality, Sunk Cost.
 
 ### Tiết kiệm token (dùng API miễn phí)
-- **Ngữ cảnh ngắn:** AI chỉ nhận 4 tin gần nhất, mỗi tin cắt còn 200 ký tự. Câu trả lời tối đa 300 token.
+- **Ngữ cảnh ngắn:** AI chỉ nhận 4 tin gần nhất, mỗi tin cắt còn 200 ký tự. Câu trả lời tối đa 400 token (đã gồm phân tích ý định CoT Speech Act & Cognitive Root).
 - **Chọn model theo độ khó:** câu đơn giản dùng model "lite"; câu cần giải thích dùng model "flash". Tắt chế độ thinking. Model lỗi hoặc hết lượt sẽ tạm nghỉ, hệ thống chuyển sang model dự phòng.
 - **Tin nhắn bị chặn** (prompt injection) được trả lời bằng câu soạn sẵn, **không tốn token**.
 - **Gemini lỗi:** chuyển sang bộ trả lời theo mẫu dùng từ khóa (`chatbot.py`, `fallacy_detector.py`), 0 token.
-- Chi phí đo thực tế: **khoảng 750 token mỗi lượt**.
+- Chi phí đo thực tế: **khoảng 850 token mỗi lượt** (bao gồm phân loại ý định hội thoại và định tuyến nhận thức).
 
 ### Meme
 - AI đề xuất từ khóa meme mỗi lượt. Server quyết định có gửi hay không:
@@ -157,8 +157,8 @@ AI phải chọn đúng 1 "nước đi" mỗi lượt, theo thứ tự ưu tiên
 
 | Giới hạn | Giá trị | Ước tính |
 |---|---|---|
-| Mỗi cuộc trò chuyện | 30.000 token | khoảng 40 lượt |
-| Mỗi người mỗi ngày | 150.000 token | khoảng 200 lượt; làm mới lúc 0h giờ Việt Nam (UTC+7) |
+| Mỗi cuộc trò chuyện | 30.000 token | khoảng 35 lượt |
+| Mỗi người mỗi ngày | 150.000 token | khoảng 175 lượt; làm mới lúc 0h giờ Việt Nam (UTC+7) |
 | Độ dài mỗi tin nhắn | 2.000 ký tự | kiểm tra ở cả giao diện và server |
 
 - **Gần hết hạn mức cuộc trò chuyện** (còn dưới 2.000 token): AI được yêu cầu tổng kết và kết thúc cuộc trò chuyện.

@@ -23,4 +23,6 @@ export const FALLACY_LABELS = {
   CONFIRMATION_BIAS: 'Thiên kiến xác nhận',
   HERD_MENTALITY: 'Tâm lý bầy đàn',
   SUNK_COST: 'Ảo giác chi phí chìm',
+  OVERCONFIDENCE_BIAS: 'Ảo tưởng sức mạnh',
+  INGROUP_BIAS: 'Thiên vị nội nhóm',
 } as const

@@ -26,15 +26,14 @@ from chatbot import TOPICS
 HISTORY_LIMIT = 4
 HISTORY_CHARS = 200
 MAX_REPLY_CHARS = 800
-MAX_OUTPUT_TOKENS = 300  # trả lời ≤70 từ + JSON ~150 token; dư cho lượt chốt
+MAX_OUTPUT_TOKENS = 400  # dư dả cho CoT intent + reply ≤80 từ
 
-# Lỗi lập luận theo nội dung khóa học: 6 ngụy biện (Buổi 4) + 3 thiên kiến nhận thức (Buổi 2).
-# Khớp ràng buộc messages.fallacy_code (migration 008) và FALLACY_LABELS ở web.
+# Lỗi lập luận theo nội dung khóa học: 6 ngụy biện + 5 thiên kiến nhận thức cốt lõi.
 FLAWS = (
     "HASTY_GENERALIZATION", "AD_HOMINEM", "STRAW_MAN", "SLIPPERY_SLOPE", "FALSE_DILEMMA", "BANDWAGON",
-    "CONFIRMATION_BIAS", "HERD_MENTALITY", "SUNK_COST",
+    "CONFIRMATION_BIAS", "HERD_MENTALITY", "SUNK_COST", "OVERCONFIDENCE_BIAS", "INGROUP_BIAS",
 )
-_MOVES = ("FLAW", "ARE", "SOCRATES", "FIVE_WHYS", "CHALLENGE")
+_MOVES = ("ANSWER_QUESTION", "FLAW", "ARE", "SOCRATES", "FIVE_WHYS", "CHALLENGE")
 # Cụm chỉ có trong prompt hệ thống: xuất hiện trong câu trả lời = AI đang làm lộ chỉ dẫn
 _PROMPT_LEAK = re.compile(
     r"highest priority|never instructions|sparring buddy|pick exactly one move|FIVE_WHYS|</?chu_de>|SSA101\)",
@@ -81,15 +80,25 @@ _SAFETY = """SAFETY (highest priority):
 - Refuse sexual, violent, illegal, hateful content or smearing real people. Signs of crisis/self-harm: stop debating, reply with care, urge them to talk to family or the university counseling office."""
 
 _PERSONA = """You are "Lab", a critical-thinking sparring buddy for first-year FPT University students (ThinkingLab course, SSA101). Always reply in natural Vietnamese like a playful Gen Z friend on Messenger; use "mình - bạn" (if they use "t - m", you may too). Tease the ARGUMENT, never the PERSON.
-Each turn, examine ONLY the latest user message and pick exactly one move, checking in this order:
-1. FLAW: it contains a fallacy or cognitive bias from the fallacy enum -> name it in Vietnamese, show where the reasoning breaks in 1 sentence, ask them to fix it the way the course teaches.
-2. ARE: a stance missing Assertion, Reasoning or Evidence -> ask for exactly the missing part. Strong evidence = statistics, research, law, verifiable examples; hearsay and feelings don't count.
-3. SOCRATES: off-topic, low-effort ("ok", "không biết", "sao cũng được") or stuck -> don't think for them; ask 1 Socratic question (clarify a concept / hidden assumption / evidence / consequences) tied to the topic.
-4. FIVE_WHYS: a shallow reason or cause -> ask "Tại sao?" about their own previous answer to dig toward the root cause.
-5. CHALLENGE: solid ARE, no flaw -> praise specifically, then argue the opposing side.
-If they ask about a course concept, explain briefly, then continue the moves.
-Style: 1-3 sentences, max 60 words, exactly 1 question, a few emoji, no markdown, never repeat earlier lines.
-JSON: move; fallacy = flaw code or NONE; reply; meme = 2-4 English words describing THIS turn's specific emotion for a GIF search (e.g. "slow clap", "detective squint", "plot twist", "nervous sweating"), never generic words like "thinking"/"confused"; fill it every turn. The app turns these words into a GIF under your reply: if asked for memes, say one is coming, never that you can't send images.
+Each turn, examine the latest user message and history to determine their intent and choose the right move:
+1. If they ask a QUESTION, query a concept, or ask for guidance/clarification (speech_act="INQUIRY"):
+   - Choose move="ANSWER_QUESTION" and fallacy="NONE" (NEVER label an inquiry as a fallacy).
+   - Answer their question accurately, helpfully and concisely (1-2 sentences), then connect back to the debate topic.
+2. If they make an ARGUMENT or state a position (speech_act="ARGUMENT"), evaluate in this order:
+   - FLAW: it contains a fallacy or cognitive bias from the fallacy enum:
+     * Overconfidence / self-aggrandizement (nói về bản thân thiên tài, không thể thất bại) -> OVERCONFIDENCE_BIAS.
+     * In-group favoritism (bạn bè mình giỏi, người ngoài kém) -> INGROUP_BIAS.
+     * Hasty Generalization (khái quát hóa toàn thể từ số ít) -> HASTY_GENERALIZATION.
+     * Other flaws from the enum.
+     Name the flaw in Vietnamese, show where the reasoning breaks in 1 sentence, ask them to fix it the way the course teaches.
+   - ARE: a stance missing Assertion, Reasoning or Evidence -> ask for exactly the missing part.
+   - SOCRATES: off-topic, low-effort ("ok", "không biết") or stuck -> ask 1 Socratic question tied to the topic.
+   - FIVE_WHYS: a shallow reason -> ask "Tại sao?" about their previous answer.
+   - CHALLENGE: solid ARE, no flaw -> praise specifically, then argue the opposing side.
+3. If greeting, acknowledging or casual (speech_act="META_CHAT") -> SOCRATES or CHALLENGE with fallacy="NONE".
+
+Style: 1-3 sentences, max 75 words, friendly Gen Z, a few emoji, no markdown, never repeat earlier lines.
+JSON properties: speech_act, target_scope, cognitive_root, move, fallacy (flaw code or NONE), reply, meme (2-4 English words for GIF).
 {safety}
 {topic}"""
 
@@ -106,14 +115,52 @@ opening: Lab's first message in Vietnamese (friendly Gen Z, "mình - bạn", max
 _SCHEMA = {
     "type": "OBJECT",
     "properties": {
+        "speech_act": {
+            "type": "STRING",
+            "enum": ["INQUIRY", "ARGUMENT", "META_CHAT"],
+        },
+        "target_scope": {
+            "type": "STRING",
+            "enum": ["CONCEPT_QUERY", "SELF", "IN_GROUP", "OUT_GROUP", "POPULATION", "NONE"],
+        },
+        "cognitive_root": {
+            "type": "STRING",
+            "enum": [
+                "OVERCONFIDENCE",
+                "IN_GROUP_FAVORITISM",
+                "CONFIRMATION_SEEKING",
+                "SUNK_COST_FALLACY",
+                "HERD_FOLLOWING",
+                "HASTY_GENERALIZATION",
+                "AD_HOMINEM",
+                "STRAW_MAN",
+                "NONE",
+            ],
+        },
         "move": {"type": "STRING", "enum": list(_MOVES)},
         "fallacy": {"type": "STRING", "enum": [*FLAWS, "NONE"]},
         "reply": {"type": "STRING"},
         "meme": {"type": "STRING"},
     },
-    # Chọn bước + chẩn đoán lỗi TRƯỚC khi viết câu trả lời -> AI bám quy trình khóa học hơn
-    "propertyOrdering": ["move", "fallacy", "reply", "meme"],
-    "required": ["move", "fallacy", "reply", "meme"],
+    # Chọn phân tích ý định + nhận thức TRƯỚC khi gán nhãn và viết phản hồi
+    "propertyOrdering": [
+        "speech_act",
+        "target_scope",
+        "cognitive_root",
+        "move",
+        "fallacy",
+        "reply",
+        "meme",
+    ],
+    "required": [
+        "speech_act",
+        "target_scope",
+        "cognitive_root",
+        "move",
+        "fallacy",
+        "reply",
+        "meme",
+    ],
 }
 
 _REVIEW_SCHEMA = {
@@ -226,7 +273,24 @@ def generate_reply(topic_id, history, user_text, *, custom_topic=None, wrap_up=F
         raise ValueError("Gemini returned an empty reply")
     if _PROMPT_LEAK.search(text):  # lớp cuối: bị dụ in lại chỉ dẫn -> không trả cho người dùng
         text = SAFE_REPLY
+    speech_act = data.get("speech_act")
+    move = data.get("move")
     fallacy = data.get("fallacy")
+    cognitive_root = data.get("cognitive_root")
+    target_scope = data.get("target_scope")
+
+    # Quy tắc vàng: Bất kỳ câu hỏi / yêu cầu giải thích nào (INQUIRY hoặc move ANSWER_QUESTION)
+    # TUYỆT ĐỐI không được mang mã lỗi ngụy biện / thiên kiến
+    if speech_act == "INQUIRY" or move == "ANSWER_QUESTION":
+        fallacy = None
+
+    # Tự động hiệu chỉnh nếu LLM chọn HASTY_GENERALIZATION nhưng phân tích nhận thức chỉ ra OVERCONFIDENCE hoặc INGROUP
+    if fallacy == "HASTY_GENERALIZATION":
+        if cognitive_root == "OVERCONFIDENCE" or target_scope == "SELF":
+            fallacy = "OVERCONFIDENCE_BIAS"
+        elif cognitive_root == "IN_GROUP_FAVORITISM" or target_scope == "IN_GROUP":
+            fallacy = "INGROUP_BIAS"
+
     return CompanionReply(
         text=text.strip()[:MAX_REPLY_CHARS],
         fallacy_code=fallacy if fallacy in FLAWS else None,

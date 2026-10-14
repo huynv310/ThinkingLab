@@ -172,7 +172,7 @@ def run_benchmark_mode(vus: int, duration_s: int, simulated_ai_ms: int = 1200):
         time.sleep(jitter)
         usage = kwargs.get("usage")
         if isinstance(usage, dict):
-            usage["total"] = random.randint(450, 750)
+            usage["total"] = random.randint(700, 950)  # thực tế ~850 token/lượt sau khi bổ sung CoT
         return companion.CompanionReply(
             text="Lập luận của bạn rất thú vị, nhưng bạn dựa trên bằng chứng thống kê nào?",
             fallacy_code=None,

@@ -11,6 +11,8 @@ export type FallacyCode =
   | 'CONFIRMATION_BIAS'
   | 'HERD_MENTALITY'
   | 'SUNK_COST'
+  | 'OVERCONFIDENCE_BIAS'
+  | 'INGROUP_BIAS'
 
 export interface ChatMessage {
   id: number
