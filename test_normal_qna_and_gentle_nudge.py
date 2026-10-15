@@ -138,3 +138,77 @@ def test_chatbot_fallback_handles_casual_greeting():
     reply = chatbot.build_reply("Chào bạn nhé", turn=0, use_ai=False)
     assert reply.fallacy_code is None
     assert "Chào bạn" in reply.text or "Hé lô" in reply.text
+
+
+def test_schema_enforces_mandatory_4_step_property_ordering():
+    """Quy chuẩn EdAI: propertyOrdering và required phải bắt buộc đủ 4 bước tư duy trước khi sinh reply."""
+    ordering = companion._SCHEMA["propertyOrdering"]
+    assert ordering[:7] == [
+        "evaluation",
+        "pedagogical_critique",
+        "socratic_challenge",
+        "extension_guidance",
+        "move",
+        "fallacy",
+        "reply",
+    ]
+    required = set(companion._SCHEMA["required"])
+    assert {
+        "evaluation",
+        "pedagogical_critique",
+        "socratic_challenge",
+        "extension_guidance",
+        "move",
+        "fallacy",
+        "reply",
+    } <= required
+
+
+def test_edai_cognitive_fields_populated_in_companion_reply(monkeypatch):
+    """Khi AI trả lời, các trường tư duy 4 bước được lưu trọn vẹn trong CompanionReply."""
+    monkeypatch.setenv("GEMINI_API_KEY", "mock-key")
+
+    mock_payload = {
+        "evaluation": "Chuỗi 5 Whys mang nặng tính đổ lỗi.",
+        "pedagogical_critique": "Lệch hướng ngay từ Why 2: đổ lỗi cho giảng viên và sự xui xẻo.",
+        "socratic_challenge": "Nếu do đề thi và may rủi, tại sao vẫn có người đạt điểm cao?",
+        "extension_guidance": "Chuyển hướng về vòng tròn kiểm soát và phương pháp học.",
+        "move": "ANSWER_QUESTION",
+        "fallacy": "NONE",
+        "reply": "Chuỗi phân tích của bạn đang bị lệch hướng do đổ lỗi cho đề thi và may rủi...",
+        "meme": "thinking",
+    }
+
+    def fake_post(*args, **kwargs):
+        return _MockResp(mock_payload)
+
+    monkeypatch.setattr(requests, "post", fake_post)
+
+    reply = companion.generate_reply("giang-vien-a", [], "kiểm chứng giúp tôi chuỗi 5 Whys")
+    assert reply.evaluation == "Chuỗi 5 Whys mang nặng tính đổ lỗi."
+    assert "Lệch hướng ngay từ Why 2" in reply.pedagogical_critique
+    assert "vòng tròn kiểm soát" in reply.extension_guidance
+
+
+def test_fallback_critiques_external_blame_in_user_screenshot():
+    """Fallback của chatbot.py: Khi gặp chuỗi 5 Whys đổ lỗi giảng viên và xui xẻo (như trong ảnh),
+    tuyệt đối KHÔNG khen 'sắc bén', mà phải chỉ ra điểm yếu sư phạm và gợi ý mở rộng ý tưởng."""
+    user_text = (
+        "Vấn đề: Sinh viên bị điểm thấp.\n"
+        "Why 1: Tại sao lại bị điểm thấp? -> Vì không làm được bài.\n"
+        "Why 2: Tại sao không làm được bài? -> Vì đề thi năm nay quá khó.\n"
+        "Why 3: Tại sao đề thi lại khó? -> Vì giảng viên ra đề đánh đố sinh viên.\n"
+        "Why 4: Tại sao giảng viên lại ra đề đánh đố? -> Vì thầy/cô muốn giảm tỷ lệ qua môn.\n"
+        "Why 5: Tại sao em lại rơi vào nhóm rớt môn? -> Vì em xui xẻo trúng vào ca thi khó.\n"
+        "kiểm chứng đê"
+    )
+    reply = chatbot.build_reply(user_text, turn=0, use_ai=False)
+    # Tuyệt đối không khen sáo rỗng
+    assert "rất sắc bén" not in reply.text
+    # Phải có điểm yếu sư phạm ("chê" có căn cứ)
+    assert "Điểm yếu sư phạm" in reply.text
+    assert "lệch hướng" in reply.text
+    assert "đổ lỗi ngoại cảnh" in reply.text
+    # Phải có gợi ý mở rộng ý tưởng
+    assert "Gợi ý mở rộng ý tưởng" in reply.text
+    assert "vòng tròn kiểm soát" in reply.text

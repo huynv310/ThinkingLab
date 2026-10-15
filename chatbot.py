@@ -103,11 +103,36 @@ _CASUAL_GREETINGS = [
     "Chào bạn! Lab luôn ở đây để đồng hành cùng bạn. Bạn muốn mổ xẻ vấn đề gì hay có câu hỏi nào cần kiểm chứng không?",
 ]
 
-_INQUIRY_REVIEWS = [
-    "Bộ câu hỏi bạn đưa ra rất chất lượng và có chiều sâu! Các câu hỏi đã đào sâu bóc tách từ kết quả bề mặt đến nguyên nhân gốc rễ và số liệu thực tế, rất chuẩn tinh thần mô hình Socrates và 5 Whys. Điểm sáng là tập trung vào hành động cá nhân thay vì phán xét chung chung.",
-    "Cách đặt câu hỏi của bạn rất sắc bén! Bạn đã bóc tách được các giả định ngầm định và cơ chế tâm lý đằng sau niềm tin. Để sắc sảo hơn nữa, bạn có thể bổ sung thêm câu hỏi về giải pháp hành động tiếp theo nhé.",
-    "Bộ câu hỏi đào sâu rất tốt! Những câu hỏi này giúp đối tượng nhìn thẳng vào trách nhiệm và sự thật khách quan. Rất đúng phương pháp phản biện!",
-]
+def review_inquiry_or_framework(text):
+    """Đánh giá và nhận xét sơ bộ theo chuẩn EdAI 4 bước: Đánh giá, Nhận xét, Chê có căn cứ, Gợi ý mở rộng."""
+    norm = unicodedata.normalize("NFC", text).lower()
+
+    # 1. Bóc tách dấu hiệu đổ lỗi ngoại cảnh / may rủi / quy chụp giảng viên / đề thi
+    external_blame = any(
+        kw in norm
+        for kw in (
+            "đánh đố", "xui xẻo", "may rủi", "tại thầy", "tại cô",
+            "giảm tỷ lệ", "do đề", "đề quá khó", "ép rớt", "không công bằng",
+        )
+    )
+    if external_blame:
+        return (
+            "Điểm yếu sư phạm: Chuỗi phân tích này đang bị lệch hướng ngay từ những bước đầu. "
+            "Thay vì truy vấn nguyên nhân chủ quan (phương pháp tự học, kỹ năng quản lý thời gian, sự chuẩn bị) để tìm giải pháp cải thiện, "
+            "người hỏi lại đi phán xét động cơ của giảng viên/đề thi và kết thúc bằng 'xui xẻo/may rủi' — một thiên kiến đổ lỗi ngoại cảnh (External Attribution) điển hình khiến vấn đề không thể giải quyết.\n\n"
+            "Gợi ý mở rộng ý tưởng: Hãy đưa vấn đề về 'vòng tròn kiểm soát' của chính bản thân: "
+            "(1) Tại sao mình chưa làm được bài? -> Do chưa nắm vững phần kiến thức nào? "
+            "(2) Tại sao chưa nắm vững? -> Do thời gian tự học chưa đủ hay phương pháp ôn luyện chưa đúng? "
+            "(3) Giải pháp hành động thực tế là gì? -> Xây dựng kế hoạch ôn tập đều đặn từ đầu kỳ thay vì 'nước đến chân mới nhảy'. "
+            "Hãy thử đặt lại chuỗi câu hỏi hướng vào hành động của chính mình nhé!"
+        )
+
+    # 2. Câu hỏi chung chung / lý thuyết
+    return (
+        "Đánh giá & Nhận xét: Bộ câu hỏi của bạn đã cố gắng bóc tách từng lớp vấn đề. "
+        "Tuy nhiên để thực sự sắc sảo chuẩn tinh thần phản biện, hãy kiểm tra lại: Từng câu hỏi có đang xoay quanh dữ liệu thực tế và hành vi cụ thể không, hay đang dựa trên phán đoán cảm tính?\n\n"
+        "Gợi ý mở rộng ý tưởng: Hãy bổ sung thêm câu hỏi về giải pháp hành động cụ thể ở bước cuối cùng, đồng thời tự phản biện xem có góc nhìn đối lập nào hợp lý hơn không nhé!"
+    )
 
 
 @dataclass(frozen=True)
@@ -172,7 +197,7 @@ def build_reply(text, turn, use_ai=True):
 
     # 2. Nhờ kiểm chứng / hỏi đáp thông thường
     if is_inquiry_or_review(text):
-        review = _INQUIRY_REVIEWS[turn % len(_INQUIRY_REVIEWS)]
+        review = review_inquiry_or_framework(text)
         return Reply(review, None, None)
 
     code = detect_fallcacy(text, use_ai=use_ai)

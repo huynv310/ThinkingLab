@@ -27,7 +27,7 @@ MODEL_FAST_ENV = "GEMINI_MODEL_FAST"
 JITTER_ENV = "GEMINI_JITTER_ENABLED"
 API_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 
-# (model, generationConfig bổ sung để tắt thinking)
+# (model, generationConfig bổ sung để tắt thinking ngầm, tư duy CoT chuyển vào Schema)
 LITE = (
     ("gemini-flash-lite-latest", {}),  # mặc định không thinking
     ("gemini-3.1-flash-lite", {"thinkingConfig": {"thinkingBudget": 0}}),
@@ -35,6 +35,8 @@ LITE = (
 SMART = (
     ("gemini-3.8-flash", {"thinkingConfig": {"thinkingBudget": 0}}),
     ("gemini-flash-latest", {"thinkingConfig": {"thinkingBudget": 0}}),
+    ("gemini-3.1-flash-lite", {"thinkingConfig": {"thinkingBudget": 0}}),
+    ("gemini-flash-lite-latest", {}),
 )
 TIERS = {"lite": LITE + SMART, "smart": SMART + LITE}
 
@@ -46,6 +48,7 @@ _cooldown_until = {}
 _key_cooldown_until = {}
 _key_request_timestamps = {}
 _key_last_used = {}
+_key_inflight = {}
 _lock = threading.Lock()
 
 
@@ -190,7 +193,7 @@ def generate_json(
     tier="lite",
     temperature=0.0,
     max_output_tokens=256,
-    timeout=(3.05, 12),
+    timeout=(3.05, 30),
     usage=None,
 ):
     """Trả về dict đã parse; ném lỗi nếu mạng/API hỏng hoặc output không phải JSON object.
@@ -207,7 +210,13 @@ def generate_json(
     with _lock:
         ready_keys = [k for k in active_keys if _key_cooldown_until.get(k, 0) <= now]
         if ready_keys:
-            ready_keys.sort(key=lambda k: (_key_recent_count(k, now), _key_last_used.get(k, 0)))
+            ready_keys.sort(
+                key=lambda k: (
+                    _key_inflight.get(k, 0),
+                    _key_recent_count(k, now),
+                    _key_last_used.get(k, 0),
+                )
+            )
             keys_to_try = ready_keys
         else:
             keys_to_try = active_keys[:1]
@@ -216,6 +225,8 @@ def generate_json(
     for model, extra in _candidates(tier):
         model_succeeded = False
         for current_key in keys_to_try:
+            with _lock:
+                _key_inflight[current_key] = _key_inflight.get(current_key, 0) + 1
             _record_key_use(current_key)
             body = {
                 "systemInstruction": {"parts": [{"text": system}]},
@@ -228,13 +239,23 @@ def generate_json(
                     **extra,
                 },
             }
-            response = requests.post(
-                API_URL.format(model=model),
-                json=body,
-                headers={"x-goog-api-key": current_key},  # key ở header, không nằm trong URL/log
-                timeout=timeout,
-                allow_redirects=False,  # không để API key đi theo redirect
-            )
+            try:
+                response = requests.post(
+                    API_URL.format(model=model),
+                    json=body,
+                    headers={"x-goog-api-key": current_key},  # key ở header, không nằm trong URL/log
+                    timeout=timeout,
+                    allow_redirects=False,  # không để API key đi theo redirect
+                )
+            except requests.exceptions.RequestException as exc:
+                logger.warning("Gemini network error on model %s: %s, trying next candidate", model, exc)
+                _cool_down(model)
+                break
+            finally:
+                with _lock:
+                    if current_key in _key_inflight:
+                        _key_inflight[current_key] = max(0, _key_inflight[current_key] - 1)
+
             if response.status_code == 429:
                 if is_daily_quota_exhausted(response):
                     cd_sec = seconds_until_daily_reset()
@@ -268,8 +289,29 @@ def generate_json(
     )
     if usage is not None:
         usage["total"] = usage.get("total", 0) + _total_tokens(meta)
-    raw = payload["candidates"][0]["content"]["parts"][0]["text"]
-    data = json.loads(raw)
+    candidates = payload.get("candidates", [])
+    if not candidates:
+        raise ValueError("Gemini returned empty candidates")
+    raw = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+
+    # Làm sạch markdown fences nếu model có bọc ```json
+    raw_clean = raw.strip()
+    if raw_clean.startswith("```"):
+        raw_clean = re.sub(r"^```(?:json)?\s*", "", raw_clean, flags=re.IGNORECASE)
+        raw_clean = re.sub(r"\s*```$", "", raw_clean).strip()
+
+    try:
+        data = json.loads(raw_clean)
+    except json.JSONDecodeError:
+        # Cố gắng tự vá nhẹ nếu JSON bị ngắt trước dấu đóng do giới hạn token
+        if raw_clean.startswith("{") and not raw_clean.endswith("}"):
+            try:
+                data = json.loads(raw_clean + '"}')
+            except Exception:
+                data = json.loads(raw_clean + '}')
+        else:
+            raise
+
     if not isinstance(data, dict):
         raise ValueError("Gemini output is not a JSON object")
     return data

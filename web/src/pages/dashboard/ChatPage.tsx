@@ -18,6 +18,7 @@ import {
   type Conversation,
 } from '../../lib/api'
 import { sound } from '../../lib/sound'
+import { getRandomThinkingPhrase } from '../../lib/thinkingPhrases'
 
 const MAX_CHARS = 2000 // khớp MAX_CONTENT_CHARS ở api/chat.py
 const MIN_TYPING_MS = 700 // để "đang soạn tin" kịp hiện, cảm giác như bạn bè đang gõ
@@ -275,7 +276,7 @@ function Thread({
         <Avatar archived={conversation?.status === 'ARCHIVED'} />
         <div className="min-w-0 flex-1">
           <h2 className="truncate font-bold text-white">{topicTitle(conversation?.topic ?? null, conversation?.custom_topic)}</h2>
-          <p className="truncate text-sm text-slate-400">{typing ? 'Đang soạn tin…' : <><span className="max-sm:hidden">Bạn luyện phản biện · </span>Luôn online</>}</p>
+          <p className="truncate text-sm text-slate-400">{typing ? 'Đang suy nghĩ…' : <><span className="max-sm:hidden">Bạn luyện phản biện · </span>Luôn online</>}</p>
         </div>
         <QuotaRings used={used} limit={TOKEN_LIMIT} dailyUsed={dailyUsed} dailyLimit={DAILY_TOKEN_LIMIT} />
       </header>
@@ -387,13 +388,31 @@ function Meme({ url }: { url: string }) {
 }
 
 function TypingDots() {
+  const [phrase, setPhrase] = useState(() => getRandomThinkingPhrase())
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setPhrase((current) => getRandomThinkingPhrase(current))
+    }, 3800)
+    return () => clearInterval(timer)
+  }, [])
+
   return (
-    <div className="flex items-end gap-2" aria-label="Đang soạn tin">
+    <div className="bubble-in flex items-end gap-2" aria-label={`Đang soạn tin: ${phrase}`}>
       <Avatar size={30} archived />
-      <div className="flex gap-1 rounded-3xl rounded-bl-lg story-glass border border-white/10 px-4 py-3.5 shadow-sm">
-        {[0, 1, 2].map((i) => (
-          <span key={i} className="typing-dot size-2 rounded-full bg-cyan-400" style={{ animationDelay: `${i * 0.15}s` }} />
-        ))}
+      <div className="flex items-center gap-2.5 rounded-3xl rounded-bl-lg story-glass border border-white/10 px-4 py-2.5 shadow-sm">
+        <div className="flex items-center gap-1 shrink-0" aria-hidden="true">
+          {[0, 1, 2].map((i) => (
+            <span
+              key={i}
+              className="typing-dot size-2 rounded-full bg-cyan-400"
+              style={{ animationDelay: `${i * 0.15}s` }}
+            />
+          ))}
+        </div>
+        <span className="text-xs font-medium text-cyan-200/90 tracking-wide select-none">
+          {phrase}
+        </span>
       </div>
     </div>
   )
