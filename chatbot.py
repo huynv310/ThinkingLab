@@ -97,6 +97,19 @@ _MIN_WORDS = 6
 _REASONED_WORDS = 25
 
 
+_CASUAL_GREETINGS = [
+    "Chào bạn nha! Rất vui được gặp bạn hôm nay. Cứ thoải mái chia sẻ nhé, bạn đang có câu hỏi hay chủ đề nào cần tụi mình cùng thảo luận không nè?",
+    "Hé lô bạn! Hôm nay thế nào rồi? Cứ tự nhiên đàm đạo hoặc hỏi bất cứ điều gì bạn đang băn khoăn nhé!",
+    "Chào bạn! Lab luôn ở đây để đồng hành cùng bạn. Bạn muốn mổ xẻ vấn đề gì hay có câu hỏi nào cần kiểm chứng không?",
+]
+
+_INQUIRY_REVIEWS = [
+    "Bộ câu hỏi bạn đưa ra rất chất lượng và có chiều sâu! Các câu hỏi đã đào sâu bóc tách từ kết quả bề mặt đến nguyên nhân gốc rễ và số liệu thực tế, rất chuẩn tinh thần mô hình Socrates và 5 Whys. Điểm sáng là tập trung vào hành động cá nhân thay vì phán xét chung chung.",
+    "Cách đặt câu hỏi của bạn rất sắc bén! Bạn đã bóc tách được các giả định ngầm định và cơ chế tâm lý đằng sau niềm tin. Để sắc sảo hơn nữa, bạn có thể bổ sung thêm câu hỏi về giải pháp hành động tiếp theo nhé.",
+    "Bộ câu hỏi đào sâu rất tốt! Những câu hỏi này giúp đối tượng nhìn thẳng vào trách nhiệm và sự thật khách quan. Rất đúng phương pháp phản biện!",
+]
+
+
 @dataclass(frozen=True)
 class Reply:
     text: str
@@ -106,6 +119,30 @@ class Reply:
 
 def opening_message(topic_id):
     return TOPICS[topic_id]["opening"]
+
+
+def is_casual_greeting(text):
+    """Phát hiện lời chào, hỏi thăm thân mật ngắn."""
+    normalized = unicodedata.normalize("NFC", text).lower().strip()
+    words = re.findall(r"\w+", normalized)
+    casual_words = {"chào", "hi", "hello", "halo", "hé lô", "hey", "alo"}
+    return len(words) <= 6 and any(w in casual_words for w in words)
+
+
+def is_inquiry_or_review(text):
+    """Phát hiện người dùng đang hỏi, nhờ giải thích, hoặc nhờ kiểm chứng/review câu hỏi/bài tập."""
+    normalized = unicodedata.normalize("NFC", text).lower()
+    inquiry_phrases = (
+        "kiểm chứng giúp", "hãy kiểm chứng", "nhờ kiểm chứng", "kiểm tra giúp", "xem giúp", "đánh giá giúp",
+        "nhờ xem", "so sánh giúp", "giải thích giúp", "bộ mô hình", "mô hình socrates", "câu hỏi socrates",
+        "5 whys", "5 why", "là gì vậy", "nghĩa là gì", "khác nhau thế nào", "tại sao lại",
+        "cho mình hỏi", "cho em hỏi", "bạn ơi cho hỏi", "thắc mắc", "xin ý kiến",
+    )
+    if any(p in normalized for p in inquiry_phrases):
+        return True
+    if normalized.strip().endswith("?") and any(normalized.startswith(q) for q in ("tại sao", "vì sao", "sao lại", "thế nào", "như thế nào", "ai", "cái gì")):
+        return True
+    return False
 
 
 def is_naive(text):
@@ -127,6 +164,16 @@ def build_reply(text, turn, use_ai=True):
     `turn` dùng để xoay vòng câu châm chọc/câu hỏi cho đỡ lặp."""
     if not isinstance(text, str):
         raise TypeError(f"text must be str, got {type(text).__name__}")
+
+    # 1. Chào hỏi thân thiện
+    if is_casual_greeting(text):
+        greeting = _CASUAL_GREETINGS[turn % len(_CASUAL_GREETINGS)]
+        return Reply(greeting, None, None)
+
+    # 2. Nhờ kiểm chứng / hỏi đáp thông thường
+    if is_inquiry_or_review(text):
+        review = _INQUIRY_REVIEWS[turn % len(_INQUIRY_REVIEWS)]
+        return Reply(review, None, None)
 
     code = detect_fallcacy(text, use_ai=use_ai)
     if code:
