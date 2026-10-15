@@ -8,7 +8,7 @@
   "functions": {
     "api/chat.py": {
       "maxDuration": 30,
-      "includeFiles": "{chatbot,companion,memes,gemini_client,fallacy_detector}.py"
+      "includeFiles": "{chatbot,companion,memes,gemini_client,fallacy_detector,argument_analyzer,cognitive_bias_detector}.py"
     }
   },
   "rewrites": [{ "source": "/((?!api/).*)", "destination": "/index.html" }]
