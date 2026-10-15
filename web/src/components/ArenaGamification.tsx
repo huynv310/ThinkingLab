@@ -1,4 +1,4 @@
-import { MessageSquareText, RotateCw, Sparkles, Trophy, X } from 'lucide-react'
+import { ArrowRight, MessageSquareText, RotateCw, Sparkles, Trophy, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { fetchUserArenaData, type ArenaMetricsResult, type UnlockedBadge } from '../lib/arena'
@@ -246,6 +246,33 @@ export function ArenaGamification() {
             Chưa có huy hiệu nào được mở khóa. Hãy tiếp tục tranh luận cùng AI mà không mắc lỗi ngụy biện để nhận huy hiệu!
           </div>
         )}
+      </div>
+
+      {/* Phím tắt mời gọi vào Bạn luyện phản biện */}
+      <div className="mt-5 border-t border-white/10 pt-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-cyan-500/30 bg-gradient-to-r from-cyan-500/15 via-teal-500/10 to-brand/10 p-4 transition-all duration-300 hover:border-cyan-400/50 hover:shadow-[0_0_25px_rgba(34,211,238,0.2)]">
+          <div className="flex items-center gap-3">
+            <span className="grid size-11 place-items-center rounded-xl border border-cyan-400/30 bg-cyan-500/20 text-cyan-300 shadow-[0_0_15px_rgba(34,211,238,0.25)] shrink-0">
+              <MessageSquareText size={22} aria-hidden />
+            </span>
+            <div className="space-y-0.5">
+              <p className="text-sm font-bold text-white flex items-center gap-1.5">
+                Bứt phá năng lực phản biện cùng AI
+                <Sparkles size={14} className="text-amber-400 animate-pulse" aria-hidden />
+              </p>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Vào <strong>Bạn luyện phản biện</strong> để thử thách lập luận đa chiều, khắc phục điểm gãy tư duy và thăng hạng ARE.
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/dashboard/tro-chuyen"
+            className="group inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-cyan-400/50 bg-gradient-to-r from-cyan-500 to-brand px-5 py-2.5 text-xs sm:text-sm font-bold text-white shadow-[0_0_20px_rgba(34,211,238,0.35)] transition-all duration-200 hover:brightness-110 hover:shadow-[0_0_30px_rgba(34,211,238,0.5)] hover:scale-[1.02] active:scale-[0.98] shrink-0"
+          >
+            <span>Vào Bạn luyện phản biện</span>
+            <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
+          </Link>
+        </div>
       </div>
     </div>
   )
